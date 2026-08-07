@@ -1,0 +1,311 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const experiments = (await getCollection("experiments")).sort(
+  (a, b) => a.data.experimentNumber - b.data.experimentNumber
+);
+
+const totalViva = experiments.reduce(
+  (sum, exp) => sum + (exp.data.vivaQuestions?.length ?? 0),
+  0
+);
+
+const datasets = [...new Set(experiments.map((exp) => exp.data.dataset).filter(Boolean))];
+
+const formatNumber = (n: number) => String(n).padStart(2, "0");
+
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function makeCurve(seed: number, points = 36, noise = 0.05) {
+  const rand = mulberry32(seed);
+  const out: number[] = [];
+  for (let i = 0; i < points; i++) {
+    const t = i / (points - 1);
+    const decay = Math.exp(-4 * t);
+    const wobble = Math.sin(t * 11 + seed) * 0.02;
+    const jitter = (rand() - 0.5) * noise * (1 - t * 0.7);
+    out.push(Math.max(0.02, Math.min(1, decay + wobble + jitter)));
+  }
+  return out;
+}
+
+function toPath(values: number[], w: number, h: number, pad = 4) {
+  const step = (w - pad * 2) / (values.length - 1);
+  return values
+    .map((v, i) => {
+      const x = pad + i * step;
+      const y = pad + (1 - v) * (h - pad * 2);
+      return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .join(" ");
+}
+
+const heroCurve = makeCurve(42, 40, 0.06);
+const heroPath = toPath(heroCurve, 520, 220, 14);
+
+const sparks = experiments.map((exp) => ({
+  ...exp,
+  sparkPath: toPath(makeCurve(100 + exp.data.experimentNumber * 7, 24, 0.09), 260, 40, 4),
+}));
+---
+
+<BaseLayout
+  title="Deep Learning Lab"
+  description="A practical deep learning laboratory manual: experiments, PyTorch code and viva preparation."
+>
+  <!-- Cover / Front Matter Header -->
+  <section class="relative overflow-hidden border-b border-border">
+    <div class="dot-grid pointer-events-none absolute inset-0 opacity-30" aria-hidden="true"></div>
+    <div
+      class="relative mx-auto grid w-full max-w-5xl items-stretch gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:py-16"
+    >
+      <div class="reveal flex flex-col justify-between">
+        <div>
+          <div class="mb-4 inline-flex items-center gap-2 border border-border bg-card/60 rounded-xl px-2.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider">
+            <span>Course Code: CS-DL-401</span>
+            <span class="text-border">|</span>
+            <span>Ref: PyTorch-v2</span>
+          </div>
+          <h1 class="font-heading text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
+            Laboratory Manual:<br />
+            <span class="text-primary">Deep Learning Systems</span>
+          </h1>
+          <p class="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground font-serif">
+            A comprehensive reference manual containing {experiments.length} structured hands-on experiments for neural model architectures. Each log details theoretical background, implementation code in PyTorch, standard observation parameters, and viva questions.
+          </p>
+        </div>
+
+        <div class="mt-8 border-t border-border pt-6">
+          <div class="grid grid-cols-3 gap-3 font-mono text-xs">
+            <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">LOGS</span>
+              <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(experiments.length)}</span>
+            </div>
+            <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">DATASETS</span>
+              <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(datasets.length)}</span>
+            </div>
+            <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">VIVA_QA</span>
+              <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(totalViva)}</span>
+             </div>
+            </div>
+          </div>
+        </div>
+
+      <figure
+        class="reveal animation-delay-200 flex flex-col justify-between border border-border bg-card rounded-2xl p-5 shadow-sm relative overflow-hidden"
+        aria-hidden="true"
+      >
+        <div class="mb-3 flex items-center justify-between font-mono text-[0.65rem] text-muted-foreground border-b border-border/60 pb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="inline-block size-2 rounded-full bg-emerald-500 animate-pulse" id="sim-status-dot"></span>
+            <span id="sim-status-text">SYSTEM: STANDBY</span>
+          </div>
+          <button
+            id="btn-simulate"
+            type="button"
+            class="text-primary font-bold hover:underline cursor-pointer focus:outline-none transition-all active:scale-95"
+          >
+            [RUN_SIMULATION]
+          </button>
+        </div>
+        <div class="relative w-full bg-background/30 p-2 border border-border rounded-xl">
+          <svg viewBox="0 0 520 220" class="w-full" role="img" aria-label="Training loss curve">
+            <g stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.8">
+              <line x1="14" y1="14" x2="506" y2="14" />
+              <line x1="14" y1="64" x2="506" y2="64" />
+              <line x1="14" y1="114" x2="506" y2="114" />
+              <line x1="14" y1="164" x2="506" y2="164" />
+              <line x1="14" y1="206" x2="506" y2="206" />
+              <!-- Vertical grid ticks -->
+              <line x1="112" y1="14" x2="112" y2="206" />
+              <line x1="210" y1="14" x2="210" y2="206" />
+              <line x1="308" y1="14" x2="308" y2="206" />
+              <line x1="406" y1="14" x2="406" y2="206" />
+            </g>
+            <path
+              id="sim-path"
+              d={heroPath}
+              fill="none"
+              stroke="var(--primary)"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              class="transition-all duration-300"
+              style="stroke-dasharray: 600; stroke-dashoffset: 0;"
+            />
+          </svg>
+        </div>
+        <div class="mt-2 flex items-center justify-between font-mono text-[0.6rem] text-muted-foreground">
+          <span id="sim-step">X: STEP (0000)</span>
+          <span id="sim-loss">Y: CROSS_ENTROPY (0.000)</span>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Table of Contents / Experiments Catalog -->
+  <section class="mx-auto w-full max-w-5xl flex-1 px-4 py-12 sm:px-6">
+    <div class="mb-6 flex items-baseline justify-between border-b border-border pb-3">
+      <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-foreground">
+        Table of Contents
+      </h2>
+      <span class="font-mono text-xs text-muted-foreground">
+        SEC-01 / INDEX
+      </span>
+    </div>
+
+    <div class="grid gap-6 sm:grid-cols-2">
+      {
+        sparks.map((exp, i) => (
+          <a
+            href={`/experiments/${exp.id}`}
+            class:list={[
+              "group reveal flex flex-col p-6 bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-200 justify-between",
+              i === 0
+                ? "animation-delay-100"
+                : i === 1
+                  ? "animation-delay-200"
+                  : "animation-delay-300",
+            ]}
+          >
+            <div>
+              <!-- Experiment Header -->
+              <div class="flex items-center justify-between border-b border-border/60 pb-3 mb-4">
+                <span class="border border-primary/35 rounded-xl px-2 py-0.5 text-[0.68rem] bg-primary/5 font-mono font-semibold text-primary">
+                  EXP-{formatNumber(exp.data.experimentNumber)}
+                </span>
+                <span class="font-mono text-[0.65rem] text-muted-foreground">
+                  dataset: {exp.data.dataset}
+                </span>
+              </div>
+
+              <!-- Title & Summary -->
+              <h3 class="font-heading text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors duration-150">
+                {exp.data.title}
+              </h3>
+              <p class="mt-2 text-xs text-muted-foreground leading-relaxed font-serif">
+                {exp.data.description}
+              </p>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-border/40 flex items-center justify-between">
+              <!-- Tags -->
+              <div class="flex flex-wrap gap-1">
+                {exp.data.tags.slice(0, 2).map((tag) => (
+                  <span class="border border-border/80 rounded-lg bg-background/50 px-1.5 py-0.5 font-mono text-[0.6rem] text-muted-foreground">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              <!-- Miniature Sparkline -->
+              <div class="w-[80px] border border-border/60 rounded-lg bg-background/30 p-1">
+                <svg
+                  viewBox="0 0 260 40"
+                  class="h-5 w-full opacity-80 group-hover:opacity-100 transition-opacity duration-150"
+                  role="img"
+                  aria-label="Loss curve"
+                >
+                  <path
+                    d={exp.sparkPath}
+                    fill="none"
+                    stroke="var(--primary)"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // Reveal-on-scroll logic
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      }
+    },
+    { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+  );
+
+  document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
+
+  // Interactive Live Training Simulator logic
+  const btn = document.getElementById("btn-simulate");
+  const simPath = document.getElementById("sim-path") as SVGPathElement | null;
+  const simStatusDot = document.getElementById("sim-status-dot");
+  const simStatusText = document.getElementById("sim-status-text");
+  const simStep = document.getElementById("sim-step");
+  const simLoss = document.getElementById("sim-loss");
+
+  let isRunning = false;
+
+  if (btn && simPath && simStatusDot && simStatusText && simStep && simLoss) {
+    btn.addEventListener("click", () => {
+      if (isRunning) return;
+      isRunning = true;
+      btn.setAttribute("disabled", "true");
+      btn.style.opacity = "0.4";
+      btn.style.pointerEvents = "none";
+
+      // Reset path stroke
+      simPath.style.strokeDasharray = "600";
+      simPath.style.strokeDashoffset = "600";
+      
+      // Update statuses to active training
+      simStatusText.textContent = "SYSTEM: OPTIMIZING";
+      simStatusDot.className = "inline-block size-2 rounded-full bg-amber-500 animate-pulse";
+
+      let currentStep = 0;
+      const targetStep = 4000;
+      const duration = 2500; // 2.5 seconds
+      const intervalMs = 25;
+      const totalSteps = duration / intervalMs;
+      
+      const interval = setInterval(() => {
+        currentStep += intervalMs;
+        const progress = Math.min(currentStep / duration, 1);
+        
+        // Update labels
+        const stepsVal = Math.floor(progress * targetStep);
+        const lossVal = (2.2 * Math.exp(-4 * progress) + (1 - progress) * 0.1 * Math.sin(progress * 15) + 0.02).toFixed(4);
+        
+        simStep.textContent = `X: STEP (${String(stepsVal).padStart(4, "0")})`;
+        simLoss.textContent = `Y: CROSS_ENTROPY (${lossVal})`;
+        
+        // Draw the path
+        simPath.style.strokeDashoffset = String(600 * (1 - progress));
+
+        if (progress >= 1) {
+          clearInterval(interval);
+          simStatusText.textContent = "SYSTEM: OPTIMIZED";
+          simStatusDot.className = "inline-block size-2 rounded-full bg-emerald-500";
+          btn.removeAttribute("disabled");
+          btn.style.opacity = "1";
+          btn.style.pointerEvents = "auto";
+          isRunning = false;
+        }
+      }, intervalMs);
+    });
+  }
+</script>

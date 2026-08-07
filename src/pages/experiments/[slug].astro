@@ -1,0 +1,65 @@
+---
+import { getCollection, render } from "astro:content";
+import { getImage } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import ExperimentLayout from "@/layouts/ExperimentLayout.astro";
+import CodeBlock from "@/components/CodeBlock.tsx";
+import VivaAccordion from "@/components/VivaAccordion.tsx";
+import ResultFigures from "@/components/ResultFigures.tsx";
+
+type Experiment = CollectionEntry<"experiments">;
+
+export async function getStaticPaths() {
+  const experiments = (await getCollection("experiments")).sort(
+    (a, b) => a.data.experimentNumber - b.data.experimentNumber
+  );
+  return experiments.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const allExperiments = (await getCollection("experiments")).sort(
+  (a, b) => a.data.experimentNumber - b.data.experimentNumber
+);
+const index = allExperiments.findIndex((exp) => exp.id === entry.id);
+const prev: Experiment | undefined = index > 0 ? allExperiments[index - 1] : undefined;
+const next: Experiment | undefined =
+  index >= 0 && index < allExperiments.length - 1 ? allExperiments[index + 1] : undefined;
+
+const figures = await Promise.all(
+  (entry.data.results ?? []).map(async (r) => {
+    const optimized = await getImage({ src: r.src });
+    return { ...r, src: optimized };
+  })
+);
+---
+
+<ExperimentLayout entry={entry} headings={headings} prev={prev} next={next}>
+  <div
+    class="prose prose-neutral max-w-none dark:prose-invert prose-headings:font-heading prose-headings:tracking-tight prose-headings:font-bold prose-headings:scroll-mt-28 prose-p:leading-relaxed prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0 prose-pre:shadow-none prose-code:before:content-none prose-code:after:content-none prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:font-semibold"
+  >
+    <CodeBlock client:load>
+      <Content />
+    </CodeBlock>
+  </div>
+
+  {
+    figures.length > 0 && (
+      <ResultFigures
+        figures={figures}
+        metrics={entry.data.metrics}
+        figureFile={entry.id}
+      />
+    )
+  }
+
+  {
+    entry.data.vivaQuestions && entry.data.vivaQuestions.length > 0 && (
+      <VivaAccordion client:load questions={entry.data.vivaQuestions} />
+    )
+  }
+</ExperimentLayout>

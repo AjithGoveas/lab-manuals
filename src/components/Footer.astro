@@ -1,0 +1,20 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-border mt-auto">
+  <div class="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+    <div class="flex flex-col gap-4 font-mono text-[0.7rem] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <span>[DOC-ID: DL-LAB-MANUAL]</span>
+        <span class="hidden sm:inline text-border">|</span>
+        <span>SYS: ASTRO + TAILWIND</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <span>COPYRIGHT © {year}</span>
+        <span class="hidden sm:inline text-border">|</span>
+        <span>PAGE: SEC-01</span>
+      </div>
+    </div>
+  </div>
+</footer>
