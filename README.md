@@ -8,7 +8,7 @@
 
 ### 🧠 Deep Learning
 * **01. [Learning the XOR Function](./src/content/experiments/deep-learning/exp-01-xor.md)**: Solve linear non-separability using a Multi-Layer Perceptron.
-* **02. [Regularization for Model Generalization](./src/content/experiments/deep-learning/exp-02-regularization.md)**: Evaluate $L_1$/$L_2$ weight penalties, Dropout, and Early Stopping.
+* **02. [Regularization for Model Generalization](./src/content/experiments/deep-learning/exp-02-regularization.md)**: Evaluate $L_1$ / $L_2$ weight penalties, Dropout, and Early Stopping.
 * **03. [Optimization Algorithms Comparison](./src/content/experiments/deep-learning/exp-03-optimizers.md)**: Compare convergence rates of SGD, Momentum, and Adam.
 * **04. [Convolutional Neural Networks (CNN)](./src/content/experiments/deep-learning/exp-04-cnn.md)**: Train a CNN on MNIST for digit classification.
 
