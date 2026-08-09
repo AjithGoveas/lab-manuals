@@ -24,6 +24,42 @@ const datasets = [...new Set(experiments.map((exp) => exp.data.dataset).filter(B
 
 const formatNumber = (n: number) => String(n).padStart(2, "0");
 
+const courseCodes: Record<string, string> = {
+  "deep-learning": "CS-DLS-401",
+  "cloud-computing": "CS-CC-302"
+};
+const courseCode = courseCodes[subject] || "";
+
+// Subject-specific syllabus data
+const subjectDetails: Record<string, { outcomes: string[]; env: string[]; resources: { name: string; url: string }[] }> = {
+  "deep-learning": {
+    outcomes: [
+      "Understand multi-layer perceptron architectures and implement gradient descent optimization from scratch.",
+      "Analyze and apply parameter norm regularization (L1/L2) to prevent overfitting.",
+      "Design and train convolutional (CNN) and recurrent (RNN/LSTM) networks for vision and sequential tasks."
+    ],
+    env: ["TensorFlow 2.x / Keras", "Google Colab", "Python 3.10+", "NumPy / Pandas"],
+    resources: [
+      { name: "TensorFlow Docs", url: "https://www.tensorflow.org/api_docs" },
+      { name: "Keras API Reference", url: "https://keras.io/api/" }
+    ]
+  },
+  "cloud-computing": {
+    outcomes: [
+      "Configure and deploy secure virtual server instances (EC2) with customized security profiles.",
+      "Containerize microservices using Docker and manage container lifecycles.",
+      "Establish automated orchestration profiles and load balancers for application scaling."
+    ],
+    env: ["AWS Console & CLI", "Docker Engine / Desktop", "Linux Shell (bash)", "EC2 / Security Groups"],
+    resources: [
+      { name: "AWS Documentation", url: "https://docs.aws.amazon.com/" },
+      { name: "Docker Documentation", url: "https://docs.docker.com/" }
+    ]
+  }
+};
+
+const details = subjectDetails[subject] || { outcomes: [], env: [], resources: [] };
+
 // Sparkline path generator
 function mulberry32(seed: number) {
   let a = seed >>> 0;
@@ -70,49 +106,55 @@ const sparks = experiments.map((exp) => ({
   title={`${subjectTitle} Manual`}
   description={`Lab manual records, implementations, and questions for ${subjectTitle}.`}
 >
-  <!-- Header / Breadcrumbs -->
-  <section class="relative overflow-hidden border-b border-border bg-card/10">
-    <div class="dot-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true"></div>
-    <div class="relative mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
+  <!-- Syllabus Header Banner -->
+  <section class="relative border-b border-border bg-gradient-to-b from-card/30 via-card/10 to-background/5 overflow-hidden">
+    <div class="dot-grid pointer-events-none absolute inset-0 opacity-15" aria-hidden="true"></div>
+    <div class="relative mx-auto w-full max-w-5xl px-6 py-12 sm:py-16">
       <div class="reveal flex flex-col justify-between">
         <div>
-          <nav class="mb-4">
+          <nav class="mb-6">
             <a
               href="/"
-              class="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
+              class="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-primary font-bold uppercase tracking-wider"
             >
-              <span>←</span>
-              <span>back to dashboard</span>
+              <span>&larr;</span>
+              <span>back to index.html</span>
             </a>
           </nav>
           
-          <div class="mb-3 inline-flex items-center gap-2 border border-border bg-card/60 rounded-xl px-2.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider">
-            <span>Syllabus Log</span>
+          <div class="mb-4 inline-flex flex-wrap items-center gap-2 border border-border bg-card/60 rounded-xl px-2.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider">
+            <span>Syllabus Manual</span>
+            {courseCode && (
+              <>
+                <span class="text-border">|</span>
+                <span class="text-primary font-bold">{courseCode}</span>
+              </>
+            )}
             <span class="text-border">|</span>
             <span>{subjectTitle}</span>
           </div>
           
-          <h1 class="font-heading text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
+          <h1 class="font-sans text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl leading-tight">
             {subjectTitle}<br />
-            <span class="text-primary">Laboratory Manual</span>
+            <span class="text-primary font-serif italic font-normal bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Laboratory Manual</span>
           </h1>
-          <p class="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground font-serif">
-            A comprehensive reference manual containing {experiments.length} structured hands-on experiments for {subjectTitle}. Each log details theoretical background, implementation code, standard observation parameters, and viva questions.
+          <p class="mt-4 max-w-2xl text-[1rem] leading-relaxed text-muted-foreground font-serif">
+            A comprehensive reference manual containing {experiments.length} structured hands-on experiments for {subjectTitle}. Each experiment details theoretical background, implementation code, standard observation parameters, and viva questions.
           </p>
         </div>
 
-        <div class="mt-8 border-t border-border pt-6 max-w-md">
+        <div class="mt-10 border-t border-border/80 pt-6 max-w-md">
           <div class="grid grid-cols-3 gap-3 font-mono text-xs">
-            <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
-              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">LOGS</span>
+            <div class="bg-card/50 border border-border/60 rounded-2xl p-3 shadow-2xs">
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">EXPERIMENTS</span>
               <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(experiments.length)}</span>
             </div>
-            <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
-              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">RESOURCES</span>
+            <div class="bg-card/50 border border-border/60 rounded-2xl p-3 shadow-2xs">
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">DATASETS</span>
               <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(datasets.length || 1)}</span>
             </div>
-            <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
-              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">VIVA_QA</span>
+            <div class="bg-card/50 border border-border/60 rounded-2xl p-3 shadow-2xs">
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">VIVA Q&A</span>
               <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(totalViva)}</span>
             </div>
           </div>
@@ -121,83 +163,167 @@ const sparks = experiments.map((exp) => ({
     </div>
   </section>
 
-  <!-- Table of Contents / Experiments Catalog -->
-  <section class="mx-auto w-full max-w-5xl flex-1 px-4 py-12 sm:px-6">
-    <div class="mb-6 flex items-baseline justify-between border-b border-border pb-3">
-      <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-foreground">
-        Table of Contents
-      </h2>
-      <span class="font-mono text-xs text-muted-foreground">
-        SEC-01 / INDEX
-      </span>
-    </div>
+  <!-- Table of Contents & Course Details -->
+  <section class="mx-auto w-full max-w-5xl px-6 py-12 flex-1 grid gap-10 md:grid-cols-[1.3fr_0.7fr]">
+    
+    <!-- Left Column: Syllabus Table of Contents -->
+    <div class="flex flex-col justify-start">
+      <div class="mb-6 flex items-baseline justify-between border-b border-border pb-3">
+        <h2 class="font-sans text-xs font-bold uppercase tracking-wider text-foreground">
+          Course Experiments Catalog
+        </h2>
+        <span class="font-mono text-[0.7rem] text-muted-foreground">
+          SEC-01 / LABS
+        </span>
+      </div>
 
-    <div class="grid gap-6 sm:grid-cols-2">
-      {
-        sparks.map((exp, i) => (
-          <a
-            href={`/experiments/${exp.data.subjectSlug}/${exp.id.split("/")[1] || exp.id}`}
-            class:list={[
-              "group reveal flex flex-col p-6 bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-200 justify-between",
-              i === 0
-                ? "animation-delay-100"
-                : i === 1
-                  ? "animation-delay-200"
-                  : "animation-delay-300",
-            ]}
-          >
-            <div>
-              <!-- Experiment Header -->
-              <div class="flex items-center justify-between border-b border-border/60 pb-3 mb-4">
-                <span class="border border-primary/35 rounded-xl px-2 py-0.5 text-[0.68rem] bg-primary/5 font-mono font-semibold text-primary">
-                  EXP-{formatNumber(exp.data.experimentNumber)}
-                </span>
-                <span class="font-mono text-[0.65rem] text-muted-foreground">
-                  resource: {exp.data.dataset || "Cloud"}
-                </span>
-              </div>
+      <div class="flex flex-col gap-6">
+        {
+          sparks.map((exp, i) => (
+            <a
+              href={`/experiments/${exp.data.subjectSlug}/${exp.id.split("/")[1] || exp.id}`}
+              class:list={[
+                "group reveal flex flex-col p-6 bg-card border border-border hover:border-primary/40 rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 justify-between relative overflow-hidden",
+                i === 0
+                  ? "animation-delay-100"
+                  : i === 1
+                    ? "animation-delay-200"
+                    : "animation-delay-300",
+              ]}
+            >
+              <!-- Left accent bar -->
+              <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top"></div>
 
-              <!-- Title & Summary -->
-              <h3 class="font-heading text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors duration-150">
-                {exp.data.title}
-              </h3>
-              <p class="mt-2 text-xs text-muted-foreground leading-relaxed font-serif">
-                {exp.data.description}
-              </p>
-            </div>
-
-            <div class="mt-5 pt-4 border-t border-border/40 flex items-center justify-between">
-              <!-- Tags -->
-              <div class="flex flex-wrap gap-1">
-                {exp.data.tags.slice(0, 2).map((tag) => (
-                  <span class="border border-border/80 rounded-lg bg-background/50 px-1.5 py-0.5 font-mono text-[0.6rem] text-muted-foreground">
-                    #{tag}
+              <div>
+                <!-- Experiment Header -->
+                <div class="flex items-center justify-between border-b border-border/40 pb-3 mb-4">
+                  <span class="font-mono text-[0.65rem] text-primary bg-primary/5 border border-primary/20 px-2.5 py-0.5 rounded-xl font-bold">
+                    EXP-{formatNumber(exp.data.experimentNumber)}
                   </span>
-                ))}
+                  <span class="font-mono text-[0.65rem] text-muted-foreground">
+                    Dataset: {exp.data.dataset || "Local Lab"}
+                  </span>
+                </div>
+
+                <!-- Title & Summary -->
+                <h3 class="font-sans text-lg font-bold tracking-tight text-foreground group-hover:text-primary transition-colors duration-150">
+                  {exp.data.title}
+                </h3>
+                <p class="mt-2 text-sm text-muted-foreground leading-relaxed font-serif">
+                  {exp.data.description}
+                </p>
               </div>
 
-              <!-- Miniature Sparkline -->
-              <div class="w-[80px] border border-border/60 rounded-lg bg-background/30 p-1">
-                <svg
-                  viewBox="0 0 260 40"
-                  class="h-5 w-full opacity-80 group-hover:opacity-100 transition-opacity duration-150"
-                  role="img"
-                  aria-label="Loss curve"
-                >
-                  <path
-                    d={exp.sparkPath}
-                    fill="none"
-                    stroke="var(--primary)"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                  />
-                </svg>
+              <div class="mt-6 pt-4 border-t border-border/40 flex items-center justify-between">
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-1.5">
+                  {exp.data.tags.slice(0, 2).map((tag) => (
+                    <span class="border border-border/80 rounded-lg bg-background/60 px-2 py-0.5 font-mono text-[0.6rem] text-muted-foreground">
+                      #{tag}
+                    </span>
+                  ))}
+                  {exp.data.vivaQuestions && (
+                    <span class="border border-amber-500/30 rounded-lg bg-amber-500/5 px-2 py-0.5 font-mono text-[0.6rem] text-amber-600 dark:text-amber-400">
+                      {exp.data.vivaQuestions.length} Viva items
+                    </span>
+                  )}
+                </div>
+
+                <!-- Sparkline Graph -->
+                <div class="w-[85px] border border-border/60 rounded-lg bg-background/50 p-1">
+                  <svg
+                    viewBox="0 0 260 40"
+                    class="h-5 w-full opacity-80 group-hover:opacity-100 transition-opacity duration-150"
+                    role="img"
+                    aria-label="Loss curve sparkline"
+                  >
+                    <path
+                      d={exp.sparkPath}
+                      fill="none"
+                      stroke="var(--primary)"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
               </div>
-            </div>
-          </a>
-        ))
-      }
+            </a>
+          ))
+        }
+      </div>
     </div>
+
+    <!-- Right Column: Learning Objectives & Environment Details -->
+    <div class="flex flex-col gap-8">
+      
+      <!-- Objectives card -->
+      <div class="flex flex-col">
+        <div class="mb-4 flex items-baseline justify-between border-b border-border pb-2">
+          <h2 class="font-sans text-xs font-bold uppercase tracking-wider text-foreground">
+            Learning Outcomes
+          </h2>
+          <span class="font-mono text-[0.65rem] text-muted-foreground">CO/PO</span>
+        </div>
+        
+        <div class="bg-card/70 border border-border rounded-2xl p-5 shadow-xs relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/30 via-primary to-primary/30"></div>
+          <ul class="space-y-4 font-serif text-sm text-muted-foreground mt-2 pl-3 list-disc">
+            {details.outcomes.map((outcome) => (
+              <li class="leading-relaxed">{outcome}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Environment Setup card -->
+      <div class="flex flex-col">
+        <div class="mb-4 flex items-baseline justify-between border-b border-border pb-2">
+          <h2 class="font-sans text-xs font-bold uppercase tracking-wider text-foreground">
+            Lab Environment Setup
+          </h2>
+          <span class="font-mono text-[0.65rem] text-muted-foreground">ENV</span>
+        </div>
+        
+        <div class="bg-card/70 border border-border rounded-2xl p-5 shadow-xs font-mono text-xs text-muted-foreground">
+          <ul class="space-y-2.5">
+            {details.env.map((envItem) => (
+              <li class="flex items-center gap-2">
+                <span class="size-1.5 rounded-full bg-primary"></span>
+                <span>{envItem}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <!-- External References card -->
+      {details.resources && details.resources.length > 0 && (
+        <div class="flex flex-col">
+          <div class="mb-4 flex items-baseline justify-between border-b border-border pb-2">
+            <h2 class="font-sans text-xs font-bold uppercase tracking-wider text-foreground">
+              Reference Manuals
+            </h2>
+            <span class="font-mono text-[0.65rem] text-muted-foreground">REF</span>
+          </div>
+          
+          <div class="bg-card/70 border border-border rounded-2xl p-5 shadow-xs font-mono text-xs flex flex-col gap-3">
+            {details.resources.map((res) => (
+              <a
+                href={res.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center justify-between text-muted-foreground hover:text-primary transition-colors border-b border-border/40 pb-1.5 last:border-0 last:pb-0"
+              >
+                <span>{res.name}</span>
+                <span class="text-[0.6rem] font-bold">API &rarr;</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+
   </section>
 </BaseLayout>
 

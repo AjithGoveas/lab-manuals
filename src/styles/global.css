@@ -6,25 +6,25 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #e7e5e4;
-  --foreground: #1e293b;
-  --card: #f5f5f4;
-  --card-foreground: #1e293b;
-  --popover: #f5f5f4;
-  --popover-foreground: #1e293b;
-  --primary: #6366f1;
+  --background: #fbfbfa; /* Brighter, clean warm-white paper */
+  --foreground: #1c1917; /* Dark stone ink */
+  --card: #ffffff; /* Crisp white cards */
+  --card-foreground: #1c1917;
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+  --primary: #4f46e5; /* More vibrant Indigo */
   --primary-foreground: #ffffff;
-  --secondary: #d6d3d1;
-  --secondary-foreground: #4b5563;
-  --muted: #e7e5e4;
-  --muted-foreground: #6b7280;
-  --accent: #f3e5f5;
-  --accent-foreground: #374151;
+  --secondary: #f5f5f4;
+  --secondary-foreground: #44403c;
+  --muted: #f5f5f4;
+  --muted-foreground: #78716c;
+  --accent: #f5f3ff;
+  --accent-foreground: #4f46e5;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #d6d3d1;
-  --input: #d6d3d1;
-  --ring: #6366f1;
+  --border: #e7e5e4; /* Soft warm clay borders */
+  --input: #e7e5e4;
+  --ring: #4f46e5;
   --chart-1: #6366f1;
   --chart-2: #4f46e5;
   --chart-3: #4338ca;
@@ -61,24 +61,24 @@
 }
 
 .dark {
-  --background: #1e1b18;
-  --foreground: #e2e8f0;
-  --card: #2c2825;
-  --card-foreground: #e2e8f0;
-  --popover: #2c2825;
-  --popover-foreground: #e2e8f0;
+  --background: #1a1614; /* Deep rich clay dark background */
+  --foreground: #f4f4f5;
+  --card: #26211e; /* Rich dark clay card */
+  --card-foreground: #f4f4f5;
+  --popover: #26211e;
+  --popover-foreground: #f4f4f5;
   --primary: #818cf8;
-  --primary-foreground: #1e1b18;
-  --secondary: #3a3633;
-  --secondary-foreground: #d1d5db;
-  --muted: #1f1c19;
-  --muted-foreground: #9ca3af;
-  --accent: #484441;
-  --accent-foreground: #d1d5db;
+  --primary-foreground: #1a1614;
+  --secondary: #332b27;
+  --secondary-foreground: #d4d4d8;
+  --muted: #211c19;
+  --muted-foreground: #a1a1aa;
+  --accent: #2e2622;
+  --accent-foreground: #818cf8;
   --destructive: #ef4444;
-  --destructive-foreground: #1e1b18;
-  --border: #3a3633;
-  --input: #3a3633;
+  --destructive-foreground: #1a1614;
+  --border: #38312d; /* Refined dark warm borders */
+  --input: #38312d;
   --ring: #818cf8;
   --chart-1: #818cf8;
   --chart-2: #6366f1;
