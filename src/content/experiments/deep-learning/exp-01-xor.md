@@ -1,5 +1,5 @@
 ---
-subject: "Deep Learning Systems"
+subject: "Deep Learning"
 subjectSlug: "deep-learning"
 experimentNumber: 1
 title: "Learning the XOR Function using Deep Feedforward Neural Networks"

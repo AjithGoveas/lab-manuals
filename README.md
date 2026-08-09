@@ -6,13 +6,14 @@
 
 ## 🔬 Experiment Catalog
 
-### 🧠 Deep Learning Systems
+### 🧠 Deep Learning
 * **01. [Learning the XOR Function](./src/content/experiments/deep-learning/exp-01-xor.md)**: Solve linear non-separability using a Multi-Layer Perceptron.
 * **02. [Regularization for Model Generalization](./src/content/experiments/deep-learning/exp-02-regularization.md)**: Evaluate $L_1$/$L_2$ weight penalties, Dropout, and Early Stopping.
+* **03. [Optimization Algorithms Comparison](./src/content/experiments/deep-learning/exp-03-optimizers.md)**: Compare convergence rates of SGD, Momentum, and Adam.
+* **04. [Convolutional Neural Networks (CNN)](./src/content/experiments/deep-learning/exp-04-cnn.md)**: Train a CNN on MNIST for digit classification.
 
 ### ☁️ Cloud Computing
-* **01. [Virtual Machine Provisioning](./src/content/experiments/cloud-computing/exp-01-aws-ec2.md)**: Provision an AWS EC2 instance, adjust Security Groups, and run an Apache server.
-* **02. [Containerization using Docker](./src/content/experiments/cloud-computing/exp-02-docker.md)**: Write a Dockerfile, build container images, and map active host ports.
+* **02. [Amazon EC2 & Nginx Deployment](./src/content/experiments/cloud-computing/exp-02-aws-ec2.md)**: Provision an EC2 instance on AWS and host a custom HTML website using Nginx.
 
 ---
 

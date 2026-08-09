@@ -1,5 +1,5 @@
 ---
-subject: "Deep Learning Systems"
+subject: "Deep Learning"
 subjectSlug: "deep-learning"
 experimentNumber: 2
 title: "Regularization Techniques for Deep Generalization"

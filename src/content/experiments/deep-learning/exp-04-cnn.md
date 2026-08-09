@@ -1,5 +1,5 @@
 ---
-subject: "Deep Learning Systems"
+subject: "Deep Learning"
 subjectSlug: "deep-learning"
 experimentNumber: 4
 title: "Convolutional Neural Networks (CNN) on MNIST"

@@ -1,5 +1,5 @@
 ---
-subject: "Deep Learning Systems"
+subject: "Deep Learning"
 subjectSlug: "deep-learning"
 experimentNumber: 3
 title: "Optimization Algorithms Comparison on Toy Dataset"
