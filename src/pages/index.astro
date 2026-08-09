@@ -2,19 +2,33 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const experiments = (await getCollection("experiments")).sort(
-  (a, b) => a.data.experimentNumber - b.data.experimentNumber
-);
+const experiments = await getCollection("experiments");
+
+const subjects = [
+  {
+    title: "Deep Learning Systems",
+    slug: "deep-learning",
+    description: "Multi-Layer Perceptrons, model optimization, parameter norm regularization, and convolutional/recurrent layers.",
+    tags: ["MLP", "Generalization", "Keras", "TensorFlow"],
+    count: experiments.filter((e) => e.data.subjectSlug === "deep-learning").length,
+  },
+  {
+    title: "Cloud Computing",
+    slug: "cloud-computing",
+    description: "Virtualization instances, Security Group port firewalls, Docker containerization, and orchestration profiles.",
+    tags: ["AWS", "EC2", "Docker", "Containers"],
+    count: experiments.filter((e) => e.data.subjectSlug === "cloud-computing").length,
+  }
+];
 
 const totalViva = experiments.reduce(
   (sum, exp) => sum + (exp.data.vivaQuestions?.length ?? 0),
   0
 );
 
-const datasets = [...new Set(experiments.map((exp) => exp.data.dataset).filter(Boolean))];
-
 const formatNumber = (n: number) => String(n).padStart(2, "0");
 
+// Path data for the interactive simulator
 function mulberry32(seed: number) {
   let a = seed >>> 0;
   return function () {
@@ -26,7 +40,7 @@ function mulberry32(seed: number) {
   };
 }
 
-function makeCurve(seed: number, points = 36, noise = 0.05) {
+function makeCurve(seed: number, points = 40, noise = 0.06) {
   const rand = mulberry32(seed);
   const out: number[] = [];
   for (let i = 0; i < points; i++) {
@@ -39,7 +53,7 @@ function makeCurve(seed: number, points = 36, noise = 0.05) {
   return out;
 }
 
-function toPath(values: number[], w: number, h: number, pad = 4) {
+function toPath(values: number[], w: number, h: number, pad = 14) {
   const step = (w - pad * 2) / (values.length - 1);
   return values
     .map((v, i) => {
@@ -52,18 +66,13 @@ function toPath(values: number[], w: number, h: number, pad = 4) {
 
 const heroCurve = makeCurve(42, 40, 0.06);
 const heroPath = toPath(heroCurve, 520, 220, 14);
-
-const sparks = experiments.map((exp) => ({
-  ...exp,
-  sparkPath: toPath(makeCurve(100 + exp.data.experimentNumber * 7, 24, 0.09), 260, 40, 4),
-}));
 ---
 
 <BaseLayout
-  title="Deep Learning Lab"
-  description="A practical deep learning laboratory manual: experiments, PyTorch code and viva preparation."
+  title="Academic Lab Manuals Hub"
+  description="A central hub for university lab manuals and exam revision: deep learning systems, cloud computing, and more."
 >
-  <!-- Cover / Front Matter Header -->
+  <!-- Cover / Header Banner -->
   <section class="relative overflow-hidden border-b border-border">
     <div class="dot-grid pointer-events-none absolute inset-0 opacity-30" aria-hidden="true"></div>
     <div
@@ -72,36 +81,36 @@ const sparks = experiments.map((exp) => ({
       <div class="reveal flex flex-col justify-between">
         <div>
           <div class="mb-4 inline-flex items-center gap-2 border border-border bg-card/60 rounded-xl px-2.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider">
-            <span>Course Code: CS-DL-401</span>
+            <span>Course Catalog: Autumn Term</span>
             <span class="text-border">|</span>
-            <span>Ref: PyTorch-v2</span>
+            <span>Revision ready</span>
           </div>
           <h1 class="font-heading text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
-            Laboratory Manual:<br />
-            <span class="text-primary">Deep Learning Systems</span>
+            Academic Lab<br />
+            <span class="text-primary">Manuals Hub</span>
           </h1>
           <p class="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground font-serif">
-            A comprehensive reference manual containing {experiments.length} structured hands-on experiments for neural model architectures. Each log details theoretical background, implementation code in PyTorch, standard observation parameters, and viva questions.
+            An interactive reference manual containing structured practical experiments and oral examination guides for multiple subjects. Toggle, read, and verify outputs instantly.
           </p>
         </div>
 
         <div class="mt-8 border-t border-border pt-6">
-          <div class="grid grid-cols-3 gap-3 font-mono text-xs">
+          <div class="grid grid-cols-3 gap-3 font-mono text-xs max-w-md">
             <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
-              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">LOGS</span>
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">SUBJECTS</span>
+              <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(subjects.length)}</span>
+            </div>
+            <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">TOTAL LOGS</span>
               <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(experiments.length)}</span>
             </div>
             <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
-              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">DATASETS</span>
-              <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(datasets.length)}</span>
-            </div>
-            <div class="border border-border bg-card rounded-2xl p-3 shadow-2xs">
-              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">VIVA_QA</span>
+              <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">VIVA ITEMS</span>
               <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(totalViva)}</span>
-             </div>
             </div>
           </div>
         </div>
+      </div>
 
       <figure
         class="reveal animation-delay-200 flex flex-col justify-between border border-border bg-card rounded-2xl p-5 shadow-sm relative overflow-hidden"
@@ -154,78 +163,59 @@ const sparks = experiments.map((exp) => ({
     </div>
   </section>
 
-  <!-- Table of Contents / Experiments Catalog -->
+  <!-- Subject Console Dashboard -->
   <section class="mx-auto w-full max-w-5xl flex-1 px-4 py-12 sm:px-6">
     <div class="mb-6 flex items-baseline justify-between border-b border-border pb-3">
       <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-foreground">
-        Table of Contents
+        Subjects Console
       </h2>
       <span class="font-mono text-xs text-muted-foreground">
-        SEC-01 / INDEX
+        SEC-02 / ROOT_INDEX
       </span>
     </div>
 
     <div class="grid gap-6 sm:grid-cols-2">
       {
-        sparks.map((exp, i) => (
+        subjects.map((sub, i) => (
           <a
-            href={`/experiments/${exp.id}`}
+            href={`/${sub.slug}`}
             class:list={[
               "group reveal flex flex-col p-6 bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-200 justify-between",
-              i === 0
-                ? "animation-delay-100"
-                : i === 1
-                  ? "animation-delay-200"
-                  : "animation-delay-300",
+              i === 0 ? "animation-delay-100" : "animation-delay-200",
             ]}
           >
             <div>
-              <!-- Experiment Header -->
+              <!-- Header -->
               <div class="flex items-center justify-between border-b border-border/60 pb-3 mb-4">
-                <span class="border border-primary/35 rounded-xl px-2 py-0.5 text-[0.68rem] bg-primary/5 font-mono font-semibold text-primary">
-                  EXP-{formatNumber(exp.data.experimentNumber)}
+                <span class="border border-primary/35 rounded-xl px-2.5 py-0.5 text-[0.68rem] bg-primary/5 font-mono font-semibold text-primary">
+                  {sub.slug.toUpperCase()}
                 </span>
                 <span class="font-mono text-[0.65rem] text-muted-foreground">
-                  dataset: {exp.data.dataset}
+                  {formatNumber(sub.count)} logs compiled
                 </span>
               </div>
 
-              <!-- Title & Summary -->
+              <!-- Title & description -->
               <h3 class="font-heading text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors duration-150">
-                {exp.data.title}
+                {sub.title}
               </h3>
               <p class="mt-2 text-xs text-muted-foreground leading-relaxed font-serif">
-                {exp.data.description}
+                {sub.description}
               </p>
             </div>
 
-            <div class="mt-5 pt-4 border-t border-border/40 flex items-center justify-between">
-              <!-- Tags -->
+            <!-- Tags footer -->
+            <div class="mt-6 pt-4 border-t border-border/40 flex items-center justify-between">
               <div class="flex flex-wrap gap-1">
-                {exp.data.tags.slice(0, 2).map((tag) => (
+                {sub.tags.slice(0, 3).map((tag) => (
                   <span class="border border-border/80 rounded-lg bg-background/50 px-1.5 py-0.5 font-mono text-[0.6rem] text-muted-foreground">
                     #{tag}
                   </span>
                 ))}
               </div>
-
-              <!-- Miniature Sparkline -->
-              <div class="w-[80px] border border-border/60 rounded-lg bg-background/30 p-1">
-                <svg
-                  viewBox="0 0 260 40"
-                  class="h-5 w-full opacity-80 group-hover:opacity-100 transition-opacity duration-150"
-                  role="img"
-                  aria-label="Loss curve"
-                >
-                  <path
-                    d={exp.sparkPath}
-                    fill="none"
-                    stroke="var(--primary)"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                  />
-                </svg>
-              </div>
+              <span class="font-mono text-[0.65rem] text-primary group-hover:translate-x-0.5 transition-transform duration-150">
+                open_manual.exe →
+              </span>
             </div>
           </a>
         ))

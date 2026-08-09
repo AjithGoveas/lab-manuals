@@ -1,26 +1,24 @@
-# 🧠 Deep Learning Systems Lab Manual
+# 📚 Academic Lab Manuals Hub
 
-> A collection of deep learning laboratory log sheets mapping theoretical foundations, model code, and experimental outputs.
+> A central repository of university lab manuals, code blocks, and viva prep guides designed for rapid practical exam revision.
 
 ---
 
 ## 🔬 Experiment Catalog
 
-### 📂 [01. Learning the XOR Function](./src/content/experiments/exp-01/index.md)
-* **Objective**: Solve linear non-separability using a Multi-Layer Perceptron.
-* **Key Focus**: Hidden layers, non-linear activation mapping, and gradient descent.
-* **Log Sheet**: `./src/content/experiments/exp-01/index.md`
+### 🧠 Deep Learning Systems
+* **01. [Learning the XOR Function](./src/content/experiments/deep-learning/exp-01-xor.md)**: Solve linear non-separability using a Multi-Layer Perceptron.
+* **02. [Regularization for Model Generalization](./src/content/experiments/deep-learning/exp-02-regularization.md)**: Evaluate $L_1$/$L_2$ weight penalties, Dropout, and Early Stopping.
 
-### 📂 [02. Regularization for Model Generalization](./src/content/experiments/exp-02/index.md)
-* **Objective**: Suppress model overfitting and evaluate generalization properties.
-* **Key Focus**: Norm penalties ($L_1$/$L_2$), dropout, data augmentation, noise injection, and early stopping.
-* **Log Sheet**: `./src/content/experiments/exp-02/index.md`
+### ☁️ Cloud Computing
+* **01. [Virtual Machine Provisioning](./src/content/experiments/cloud-computing/exp-01-aws-ec2.md)**: Provision an AWS EC2 instance, adjust Security Groups, and run an Apache server.
+* **02. [Containerization using Docker](./src/content/experiments/cloud-computing/exp-02-docker.md)**: Write a Dockerfile, build container images, and map active host ports.
 
 ---
 
 ## 🎯 Motivation
 
-This handbook was built to help students compile and review core deep learning experiments in one place, providing a reliable reference for fast revision and output cross-checking right before final laboratory exams.
+This handbook was built to help students compile and review university laboratory experiments in one place, providing a reliable reference for fast revision and output cross-checking right before final practical exams.
 
 ---
 

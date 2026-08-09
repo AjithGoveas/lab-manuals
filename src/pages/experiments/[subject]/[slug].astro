@@ -10,21 +10,26 @@ import ResultFigures from "@/components/ResultFigures.tsx";
 type Experiment = CollectionEntry<"experiments">;
 
 export async function getStaticPaths() {
-  const experiments = (await getCollection("experiments")).sort(
-    (a, b) => a.data.experimentNumber - b.data.experimentNumber
-  );
-  return experiments.map((entry) => ({
-    params: { slug: entry.id },
-    props: { entry },
-  }));
+  const experiments = await getCollection("experiments");
+  return experiments.map((entry) => {
+    // entry.id is e.g. "deep-learning/exp-01-xor" or "deep-learning/exp-01-xor.md"
+    const parts = entry.id.split("/");
+    const subject = parts[0] || entry.data.subjectSlug;
+    const slug = (parts[1] || "").replace(/\.md$/, "");
+    return {
+      params: { subject, slug },
+      props: { entry },
+    };
+  });
 }
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
-const allExperiments = (await getCollection("experiments")).sort(
-  (a, b) => a.data.experimentNumber - b.data.experimentNumber
-);
+const allExperiments = (await getCollection("experiments"))
+  .filter((exp) => exp.data.subjectSlug === entry.data.subjectSlug)
+  .sort((a, b) => a.data.experimentNumber - b.data.experimentNumber);
+
 const index = allExperiments.findIndex((exp) => exp.id === entry.id);
 const prev: Experiment | undefined = index > 0 ? allExperiments[index - 1] : undefined;
 const next: Experiment | undefined =
@@ -52,7 +57,7 @@ const figures = await Promise.all(
       <ResultFigures
         figures={figures}
         metrics={entry.data.metrics}
-        figureFile={entry.id}
+        figureFile={entry.id.split("/")[1] || entry.id}
       />
     )
   }

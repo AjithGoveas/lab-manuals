@@ -4,33 +4,38 @@ const isHome = currentPath === "/";
 
 // Simple path parsing for breadcrumbs
 const pathSegments = currentPath.split("/").filter(Boolean);
+
+// Parse dynamic segments
+const isExperiment = pathSegments[0] === "experiments";
+const subjectSlug = isExperiment ? pathSegments[1] : (pathSegments[0] || "");
+const experimentSlug = isExperiment ? pathSegments[2] : "";
 ---
 
 <header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md transition-all duration-200">
   <nav class="mx-auto flex h-(--header-h) w-full max-w-5xl items-center justify-between px-4 sm:px-6">
     <div class="flex items-center gap-3">
-      <a href="/" class="group flex items-center gap-2.5 transition-transform active:scale-95" aria-label="Deep Learning Lab home">
+      <a href="/" class="group flex items-center gap-2.5 transition-transform active:scale-95" aria-label="Lab Manuals Hub home">
         <span class="flex size-7 items-center justify-center rounded-xl bg-primary font-mono text-[0.65rem] font-black text-primary-foreground shadow-sm group-hover:rotate-6 transition-transform duration-200">
-          DL
+          LM
         </span>
         <span class="flex flex-col leading-none">
-          <span class="font-sans text-sm font-extrabold tracking-tight text-foreground">Deep Learning Lab</span>
+          <span class="font-sans text-sm font-extrabold tracking-tight text-foreground">Lab Manuals</span>
           <span class="mt-0.5 hidden font-mono text-[0.55rem] text-muted-foreground uppercase tracking-widest sm:block">
-            manual.log
+            academic.hub
           </span>
         </span>
       </a>
       
-      {pathSegments.length > 0 && (
+      {subjectSlug && (
         <div class="hidden items-center gap-1.5 font-mono text-[0.7rem] text-muted-foreground md:flex">
           <span class="text-border">/</span>
-          <span class="bg-muted px-2 py-0.5 rounded-lg border border-border/50 text-[0.65rem] uppercase">
-            {pathSegments[0]}
-          </span>
-          {pathSegments[1] && (
+          <a href={`/${subjectSlug}`} class="bg-muted hover:text-primary px-2 py-0.5 rounded-lg border border-border/50 text-[0.65rem] uppercase transition-colors">
+            {subjectSlug.replace("-", " ")}
+          </a>
+          {experimentSlug && (
             <>
               <span class="text-border">/</span>
-              <span class="text-foreground font-semibold">{pathSegments[1].replace("exp-", "EXP-")}</span>
+              <span class="text-foreground font-semibold uppercase">{experimentSlug.replace("exp-", "EXP-")}</span>
             </>
           )}
         </div>

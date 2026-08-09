@@ -1,7 +1,9 @@
 ---
+subject: "Deep Learning"
+subjectSlug: "deep-learning"
 experimentNumber: 2
 title: "Regularization Techniques for Deep Generalization"
-description: " Implement regularization techniques in deep learning models using parameter norm penalties, dataset augmentation, and noise robustness for improved generalization. "
+description: "Implement and study L1/L2 parameter norm penalties, dataset augmentation, dropout, and noise injection on the MNIST dataset using Keras."
 tags: ["Regularization", "Keras", "MNIST", "Generalization"]
 dataset: "MNIST"
 notebookUrl: "https://colab.research.google.com/"
@@ -49,7 +51,7 @@ To implement and evaluate regularization techniques—parameter norm penalties (
 
 ## Theory
 
-Generalization represents a model's ability to perform correctly on previously unseen test inputs. Deep learning networks are highly expressive and prone to **overfitting** (high variance), where the model memorizes noise in the training set instead of learning general patterns.
+Generalization represents a model's ability to perform correctly on previously unseen test inputs. Deep learning networks are highly expressive and prone to **overfitting** (high variance), where the model memorizes noise in the training set instead of learning general patterns. 
 
 To improve generalization, we apply regularization:
 
@@ -71,95 +73,95 @@ $$\tilde{J}(\theta; X, y) = J(\theta; X, y) + \alpha \Omega(\theta)$$
 ## Code
 
 ```python
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers, regularizers
-import numpy as np
+import tensorflow as tf 
+from tensorflow import keras 
+from tensorflow.keras import layers, regularizers 
+import numpy as np 
 
-# --- Load MNIST dataset ---
-(x_train, y_train), _ = keras.datasets.mnist.load_data()
+# --- Load MNIST dataset --- 
+(x_train, y_train), _ = keras.datasets.mnist.load_data() 
 
-# --- Normalize + reshape ---
-x_train = x_train.astype('float32') / 255
-x_train = np.expand_dims(x_train, -1)  # (60000, 28, 28, 1)
-y_train = tf.keras.utils.to_categorical(y_train, 10)
+# --- Normalize + reshape --- 
+x_train = x_train.astype('float32') / 255 
+x_train = np.expand_dims(x_train, -1)  # (60000, 28, 28, 1) 
+y_train = tf.keras.utils.to_categorical(y_train, 10) 
 
-# --- Add Gaussian noise ---
-noise = 0.05 * np.random.normal(size=x_train.shape)
-x_train = np.clip(x_train + noise, 0., 1.)
+# --- Add Gaussian noise --- 
+noise = 0.05 * np.random.normal(size=x_train.shape) 
+x_train = np.clip(x_train + noise, 0., 1.) 
 
-# --- Data augmentation with validation split ---
-datagen = keras.preprocessing.image.ImageDataGenerator(
-    rotation_range=10,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
-    validation_split=0.2   # 20% validation
-)
-datagen.fit(x_train)
+# --- Data augmentation with validation split --- 
+datagen = keras.preprocessing.image.ImageDataGenerator( 
+    rotation_range=10, 
+    width_shift_range=0.1, 
+    height_shift_range=0.1, 
+    validation_split=0.2   # 20% validation 
+) 
+datagen.fit(x_train) 
 
-# --- Model ---
-model = keras.Sequential([
-    layers.Flatten(input_shape=(28,28,1)),
-    layers.Dense(256, activation='relu',
-                 kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4)),
-    layers.Dropout(0.5),
+# --- Model --- 
+model = keras.Sequential([ 
+    layers.Flatten(input_shape=(28,28,1)), 
+    layers.Dense(256, activation='relu', 
+                 kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4)), 
+    layers.Dropout(0.5), 
     layers.Dense(128, activation='relu',
-                 kernel_regularizer=regularizers.l2(1e-4)),
-    layers.Dropout(0.3),
-    layers.Dense(10, activation='softmax')
-])
+                 kernel_regularizer=regularizers.l2(1e-4)), 
+    layers.Dropout(0.3), 
+    layers.Dense(10, activation='softmax') 
+]) 
 
-model.compile(
-    optimizer='adam',
-    loss='categorical_crossentropy',
-    metrics=['accuracy']
-)
+model.compile( 
+    optimizer='adam', 
+    loss='categorical_crossentropy', 
+    metrics=['accuracy'] 
+) 
 
-# --- Early stopping ---
-early_stop = keras.callbacks.EarlyStopping(
-    monitor='val_loss', patience=3, restore_best_weights=True
-)
+# --- Early stopping --- 
+early_stop = keras.callbacks.EarlyStopping( 
+    monitor='val_loss', patience=3, restore_best_weights=True 
+) 
 
-# --- Train ---
-history = model.fit(
-    datagen.flow(x_train, y_train, batch_size=128, subset='training'),
-    validation_data=datagen.flow(x_train, y_train, batch_size=128, subset='validation'),
-    epochs=50,
-    callbacks=[early_stop]
-)
+# --- Train --- 
+history = model.fit( 
+    datagen.flow(x_train, y_train, batch_size=128, subset='training'), 
+    validation_data=datagen.flow(x_train, y_train, batch_size=128, subset='validation'), 
+    epochs=50, 
+    callbacks=[early_stop] 
+) 
 ```
 
 ## Expected Results
 
 ```
-OUTPUT:
+OUTPUT: 
 Epoch 1/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 7s 17ms/step - accuracy: 0.6691 - loss: 1.1291 - val_accuracy: 0.8903 - val_loss: 0.5028
-Epoch 2/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.8399 - loss: 0.6379 - val_accuracy: 0.9183 - val_loss: 0.3879
-Epoch 3/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.8713 - loss: 0.5459 - val_accuracy: 0.9346 - val_loss: 0.3475
-Epoch 4/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.8835 - loss: 0.5028 - val_accuracy: 0.9472 - val_loss: 0.3122
-Epoch 5/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.8946 - loss: 0.4686 - val_accuracy: 0.9477 - val_loss: 0.3041
+375/375 ━━━━━━━━━━━━━━━━━━━━ 7s 17ms/step - accuracy: 0.6691 - loss: 1.1291 - val_accuracy: 0.8903 - val_loss: 0.5028 
+Epoch 2/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.8399 - loss: 0.6379 - val_accuracy: 0.9183 - val_loss: 0.3879 
+Epoch 3/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.8713 - loss: 0.5459 - val_accuracy: 0.9346 - val_loss: 0.3475 
+Epoch 4/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.8835 - loss: 0.5028 - val_accuracy: 0.9472 - val_loss: 0.3122 
+Epoch 5/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.8946 - loss: 0.4686 - val_accuracy: 0.9477 - val_loss: 0.3041 
 Epoch 6/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.9009 - loss: 0.4494 - val_accuracy: 0.9532 - val_loss: 0.2880
-Epoch 7/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.9040 - loss: 0.4388 - val_accuracy: 0.9541 - val_loss: 0.2846
-Epoch 8/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9069 - loss: 0.4254 - val_accuracy: 0.9572 - val_loss: 0.2770
-Epoch 9/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9136 - loss: 0.4107 - val_accuracy: 0.9540 - val_loss: 0.2721
-Epoch 10/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9126 - loss: 0.4097 - val_accuracy: 0.9577 - val_loss: 0.2703
-Epoch 11/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9169 - loss: 0.3960 - val_accuracy: 0.9586 - val_loss: 0.2609
-Epoch 12/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.9186 - loss: 0.3952 - val_accuracy: 0.9572 - val_loss: 0.2635
-Epoch 13/50
-375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9204 - loss: 0.3885 - val_accuracy: 0.9597 - val_loss: 0.2615
-Epoch 14/50
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.9009 - loss: 0.4494 - val_accuracy: 0.9532 - val_loss: 0.2880 
+Epoch 7/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.9040 - loss: 0.4388 - val_accuracy: 0.9541 - val_loss: 0.2846 
+Epoch 8/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9069 - loss: 0.4254 - val_accuracy: 0.9572 - val_loss: 0.2770 
+Epoch 9/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9136 - loss: 0.4107 - val_accuracy: 0.9540 - val_loss: 0.2721 
+Epoch 10/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9126 - loss: 0.4097 - val_accuracy: 0.9577 - val_loss: 0.2703 
+Epoch 11/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9169 - loss: 0.3960 - val_accuracy: 0.9586 - val_loss: 0.2609 
+Epoch 12/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 16ms/step - accuracy: 0.9186 - loss: 0.3952 - val_accuracy: 0.9572 - val_loss: 0.2635 
+Epoch 13/50 
+375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9204 - loss: 0.3885 - val_accuracy: 0.9597 - val_loss: 0.2615 
+Epoch 14/50 
 375/375 ━━━━━━━━━━━━━━━━━━━━ 6s 17ms/step - accuracy: 0.9198 - loss: 0.3902 - val_accuracy: 0.9576 - val_loss: 0.2675
 ```
 

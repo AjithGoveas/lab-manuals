@@ -1,5 +1,6 @@
 {
-  "name": "deep-learning-lab",
+  "name": "lab-manuals",
+  "description": "A central hub for university lab manuals and exam revision.",
   "type": "module",
   "version": "0.0.1",
   "engines": {

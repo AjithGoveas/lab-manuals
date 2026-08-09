@@ -1,4 +1,6 @@
 ---
+subject: "Deep Learning"
+subjectSlug: "deep-learning"
 experimentNumber: 1
 title: "Learning the XOR Function using Deep Feedforward Neural Networks"
 description: "Design and implement a Multi-Layer Perceptron (MLP) in Keras to learn the non-linear XOR function using gradient-based learning and hidden units."
