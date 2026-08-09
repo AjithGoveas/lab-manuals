@@ -20,13 +20,16 @@ interface ResultFiguresProps {
   figures: ResultFigureData[]
   metrics?: MetricRow[]
   figureFile: string
+  subjectSlug?: string
 }
 
 export default function ResultFigures({
   figures,
   metrics,
   figureFile,
+  subjectSlug,
 }: ResultFiguresProps) {
+  const isCloud = subjectSlug === "cloud-computing";
   return (
     <section className="my-12">
       <div className="mb-6 flex items-baseline justify-between border-b border-border pb-3">
@@ -73,27 +76,39 @@ export default function ResultFigures({
           <Card className="gap-0 overflow-hidden">
             <CardHeader>
               <CardTitle className="font-mono text-[0.62rem] font-bold uppercase tracking-wider text-muted-foreground">
-                observation log: metrics.out
+                {isCloud ? "verification log: system.check" : "observation log: metrics.out"}
               </CardTitle>
             </CardHeader>
             <CardContent className="px-0 pb-0">
               <Table>
-                <TableCaption>Per-epoch training metrics recorded during the run.</TableCaption>
+                <TableCaption>
+                  {isCloud
+                    ? "System verification status and observations recorded during setup."
+                    : "Per-epoch training metrics recorded during the run."}
+                </TableCaption>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>epoch</TableHead>
-                    <TableHead>train_loss</TableHead>
-                    {metrics.some((m) => m.testAccuracy !== undefined) && (
-                      <TableHead>test_acc (%)</TableHead>
+                    <TableHead>{isCloud ? "step" : "epoch"}</TableHead>
+                    {!isCloud && <TableHead>train_loss</TableHead>}
+                    {isCloud && metrics.some((m) => m.trainLoss > 0) && (
+                      <TableHead>port / code</TableHead>
                     )}
-                    <TableHead>note</TableHead>
+                    {metrics.some((m) => m.testAccuracy !== undefined) && (
+                      <TableHead>{isCloud ? "status (%)" : "test_acc (%)"}</TableHead>
+                    )}
+                    <TableHead>{isCloud ? "observation note" : "note"}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {metrics.map((m) => (
                     <TableRow key={m.epoch}>
                       <TableCell className="font-mono">{m.epoch}</TableCell>
-                      <TableCell className="font-mono">{m.trainLoss.toFixed(4)}</TableCell>
+                      {!isCloud && <TableCell className="font-mono">{m.trainLoss.toFixed(4)}</TableCell>}
+                      {isCloud && metrics.some((x) => x.trainLoss > 0) && (
+                        <TableCell className="font-mono">
+                          {m.trainLoss > 0 ? m.trainLoss.toFixed(0) : "—"}
+                        </TableCell>
+                      )}
                       {metrics.some((mm) => mm.testAccuracy !== undefined) && (
                         <TableCell className="font-mono">
                           {m.testAccuracy !== undefined ? `${m.testAccuracy.toFixed(2)}%` : "—"}

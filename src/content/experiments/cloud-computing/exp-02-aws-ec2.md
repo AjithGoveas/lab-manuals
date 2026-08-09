@@ -18,11 +18,6 @@ vivaQuestions:
     answer: "Nginx is built on an asynchronous, event-driven architecture, enabling it to handle a large number of concurrent connections with low memory consumption compared to Apache's process-per-connection model."
   - question: "How do Security Group rules control port accessibility?"
     answer: "Security groups are stateful firewalls. We configure Inbound rules (e.g. TCP Port 80 for HTTP, TCP Port 22 for SSH) to allow traffic from specific IP sources. Outbound traffic is generally fully permitted by default."
-metrics:
-  - epoch: 1
-    trainLoss: 0.0000
-    testAccuracy: 100.00
-    note: "Instance online & Nginx active"
 ---
 
 # Creating and Configuring an Amazon EC2 Instance
