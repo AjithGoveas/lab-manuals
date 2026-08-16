@@ -17,7 +17,12 @@ const questions = data.vivaQuestions?.length ?? 0;
 const toc = headings.filter((h) => h.depth === 2);
 ---
 
-<BaseLayout title={data.title} description={data.description}>
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  subjectSlug={data.subjectSlug}
+  experimentSlug={entry.id.split("/")[1] || entry.id}
+>
   <div id="reading-progress" class="fixed top-(--header-h) right-0 left-0 z-40 h-[2.5px] pointer-events-none" aria-hidden="true"></div>
 
   <article class="mx-auto w-full max-w-5xl px-6 py-10">
@@ -35,8 +40,8 @@ const toc = headings.filter((h) => h.depth === 2);
     <!-- Academic Record Page Header -->
     <header class="relative border border-border bg-card rounded-2xl p-6 sm:p-8 mb-10 shadow-xs overflow-hidden">
       <!-- Top primary bar decoration -->
-      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/30 via-primary to-primary/30"></div>
-      
+      <div class="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-primary/30 via-primary to-primary/30"></div>
+
       <!-- Metadata Row -->
       <div class="grid grid-cols-2 gap-4 border-b border-border/60 pb-5 font-mono text-xs sm:grid-cols-4">
         <div>
@@ -58,7 +63,7 @@ const toc = headings.filter((h) => h.depth === 2);
               href={data.notebookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              class="text-primary hover:underline font-bold mt-1 block text-sm flex items-center gap-0.5"
+              class="text-primary hover:underline font-bold mt-1 block text-sm items-center gap-0.5"
             >
               open_notebook <span class="text-[0.65rem]">&nearr;</span>
             </a>
@@ -87,7 +92,7 @@ const toc = headings.filter((h) => h.depth === 2);
 
     <!-- Two-column content layout -->
     <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
-      
+
       <!-- Left Column: Primary Markdown slot -->
       <div class="min-w-0 prose prose-neutral dark:prose-invert max-w-none font-serif prose-headings:font-sans prose-headings:tracking-tight prose-headings:font-bold prose-h2:text-xl prose-h2:mt-12 prose-h2:border-b prose-h2:border-border prose-h2:pb-2.5 prose-h3:text-base prose-p:text-sm prose-p:leading-relaxed prose-li:text-sm text-foreground">
         <slot />
@@ -124,7 +129,7 @@ const toc = headings.filter((h) => h.depth === 2);
         <span>[Manual Navigation]</span>
         <span>Syllabus Sequence</span>
       </div>
-      
+
       <div class="grid gap-5 sm:grid-cols-2">
         {prev && (
           <a

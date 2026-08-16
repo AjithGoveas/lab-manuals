@@ -6,11 +6,15 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
+  subjectSlug?: string;
+  experimentSlug?: string;
 }
 
 const {
   title,
   description = "Deep Learning Laboratory manual - experiments, code and viva questions.",
+  subjectSlug,
+  experimentSlug,
 } = Astro.props;
 
 const pageTitle = title.includes("Deep Learning Lab") ? title : `${title} | Deep Learning Lab`;
@@ -36,7 +40,7 @@ const pageTitle = title.includes("Deep Learning Lab") ? title : `${title} | Deep
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="renderMath()"></script>
   </head>
   <body class="min-h-dvh bg-background font-sans text-foreground antialiased flex flex-col">
-    <Header />
+    <Header subjectSlug={subjectSlug} experimentSlug={experimentSlug} />
     <main class="flex-1 flex flex-col">
       <slot />
     </main>

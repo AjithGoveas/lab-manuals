@@ -60,54 +60,16 @@ const subjectDetails: Record<string, { outcomes: string[]; env: string[]; resour
 
 const details = subjectDetails[subject] || { outcomes: [], env: [], resources: [] };
 
-// Sparkline path generator
-function mulberry32(seed: number) {
-  let a = seed >>> 0;
-  return function () {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function makeCurve(seed: number, points = 24, noise = 0.05) {
-  const rand = mulberry32(seed);
-  const out: number[] = [];
-  for (let i = 0; i < points; i++) {
-    const t = i / (points - 1);
-    const decay = Math.exp(-3 * t);
-    const wobble = Math.sin(t * 8 + seed) * 0.03;
-    const jitter = (rand() - 0.5) * noise * (1 - t * 0.5);
-    out.push(Math.max(0.05, Math.min(1, decay + wobble + jitter)));
-  }
-  return out;
-}
-
-function toPath(values: number[], w: number, h: number, pad = 4) {
-  const step = (w - pad * 2) / (values.length - 1);
-  return values
-    .map((v, i) => {
-      const x = pad + i * step;
-      const y = pad + (1 - v) * (h - pad * 2);
-      return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
-    .join(" ");
-}
-
-const sparks = experiments.map((exp) => ({
-  ...exp,
-  sparkPath: toPath(makeCurve(200 + exp.data.experimentNumber * 9, 24, 0.08), 260, 40, 4),
-}));
+const sparks = experiments;
 ---
 
 <BaseLayout
   title={`${subjectTitle} Manual`}
   description={`Lab manual records, implementations, and questions for ${subjectTitle}.`}
+  subjectSlug={subject}
 >
   <!-- Syllabus Header Banner -->
-  <section class="relative border-b border-border bg-gradient-to-b from-card/30 via-card/10 to-background/5 overflow-hidden">
+  <section class="relative border-b border-border bg-linear-to-b from-card/30 via-card/10 to-background/5 overflow-hidden">
     <div class="dot-grid pointer-events-none absolute inset-0 opacity-15" aria-hidden="true"></div>
     <div class="relative mx-auto w-full max-w-5xl px-6 py-12 sm:py-16">
       <div class="reveal flex flex-col justify-between">
@@ -118,10 +80,10 @@ const sparks = experiments.map((exp) => ({
               class="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-primary font-bold uppercase tracking-wider"
             >
               <span>&larr;</span>
-              <span>back to index.html</span>
+              <span>back</span>
             </a>
           </nav>
-          
+
           <div class="mb-4 inline-flex flex-wrap items-center gap-2 border border-border bg-card/60 rounded-xl px-2.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider">
             <span>Syllabus Manual</span>
             {courseCode && (
@@ -133,10 +95,10 @@ const sparks = experiments.map((exp) => ({
             <span class="text-border">|</span>
             <span>{subjectTitle}</span>
           </div>
-          
+
           <h1 class="font-sans text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl leading-tight">
             {subjectTitle}<br />
-            <span class="text-primary font-serif italic font-normal bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Laboratory Manual</span>
+            <span class="text-primary font-serif italic font-normal bg-linear-to-r from-primary to-primary/80 bg-clip-text">Laboratory Manual</span>
           </h1>
           <p class="mt-4 max-w-2xl text-[1rem] leading-relaxed text-muted-foreground font-serif">
             A comprehensive reference manual containing {experiments.length} structured hands-on experiments for {subjectTitle}. Each experiment details theoretical background, implementation code, standard observation parameters, and viva questions.
@@ -165,7 +127,7 @@ const sparks = experiments.map((exp) => ({
 
   <!-- Table of Contents & Course Details -->
   <section class="mx-auto w-full max-w-5xl px-6 py-12 flex-1 grid gap-10 md:grid-cols-[1.3fr_0.7fr]">
-    
+
     <!-- Left Column: Syllabus Table of Contents -->
     <div class="flex flex-col justify-start">
       <div class="mb-6 flex items-baseline justify-between border-b border-border pb-3">
@@ -228,24 +190,6 @@ const sparks = experiments.map((exp) => ({
                     </span>
                   )}
                 </div>
-
-                <!-- Sparkline Graph -->
-                <div class="w-[85px] border border-border/60 rounded-lg bg-background/50 p-1">
-                  <svg
-                    viewBox="0 0 260 40"
-                    class="h-5 w-full opacity-80 group-hover:opacity-100 transition-opacity duration-150"
-                    role="img"
-                    aria-label="Loss curve sparkline"
-                  >
-                    <path
-                      d={exp.sparkPath}
-                      fill="none"
-                      stroke="var(--primary)"
-                      stroke-width="1.8"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </div>
               </div>
             </a>
           ))
@@ -255,7 +199,7 @@ const sparks = experiments.map((exp) => ({
 
     <!-- Right Column: Learning Objectives & Environment Details -->
     <div class="flex flex-col gap-8">
-      
+
       <!-- Objectives card -->
       <div class="flex flex-col">
         <div class="mb-4 flex items-baseline justify-between border-b border-border pb-2">
@@ -264,9 +208,9 @@ const sparks = experiments.map((exp) => ({
           </h2>
           <span class="font-mono text-[0.65rem] text-muted-foreground">CO/PO</span>
         </div>
-        
+
         <div class="bg-card/70 border border-border rounded-2xl p-5 shadow-xs relative overflow-hidden">
-          <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/30 via-primary to-primary/30"></div>
+          <div class="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-primary/30 via-primary to-primary/30"></div>
           <ul class="space-y-4 font-serif text-sm text-muted-foreground mt-2 pl-3 list-disc">
             {details.outcomes.map((outcome) => (
               <li class="leading-relaxed">{outcome}</li>
@@ -283,7 +227,7 @@ const sparks = experiments.map((exp) => ({
           </h2>
           <span class="font-mono text-[0.65rem] text-muted-foreground">ENV</span>
         </div>
-        
+
         <div class="bg-card/70 border border-border rounded-2xl p-5 shadow-xs font-mono text-xs text-muted-foreground">
           <ul class="space-y-2.5">
             {details.env.map((envItem) => (
@@ -305,7 +249,7 @@ const sparks = experiments.map((exp) => ({
             </h2>
             <span class="font-mono text-[0.65rem] text-muted-foreground">REF</span>
           </div>
-          
+
           <div class="bg-card/70 border border-border rounded-2xl p-5 shadow-xs font-mono text-xs flex flex-col gap-3">
             {details.resources.map((res) => (
               <a

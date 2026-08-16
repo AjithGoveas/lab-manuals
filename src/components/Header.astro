@@ -1,21 +1,32 @@
 ---
+interface Props {
+  subjectSlug?: string;
+  experimentSlug?: string;
+}
+
+const {
+  subjectSlug: propSubjectSlug,
+  experimentSlug: propExperimentSlug,
+} = Astro.props;
+
 const currentPath = Astro.url.pathname;
 const isHome = currentPath === "/";
 
-// Simple path parsing for breadcrumbs
+// Fallback to path parsing if not explicitly provided via props
 const pathSegments = currentPath.split("/").filter(Boolean);
-
-// Parse dynamic segments
 const isExperiment = pathSegments[0] === "experiments";
-const subjectSlug = isExperiment ? pathSegments[1] : (pathSegments[0] || "");
-const experimentSlug = isExperiment ? pathSegments[2] : "";
+const pathSubjectSlug = isExperiment ? pathSegments[1] : (pathSegments[0] || "");
+const pathExperimentSlug = isExperiment ? pathSegments[2] : "";
+
+const subjectSlug = propSubjectSlug !== undefined ? propSubjectSlug : pathSubjectSlug;
+const experimentSlug = propExperimentSlug !== undefined ? propExperimentSlug : pathExperimentSlug;
 ---
 
 <header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md transition-all duration-200">
   <nav class="mx-auto flex h-(--header-h) w-full max-w-5xl items-center justify-between px-4 sm:px-6">
     <div class="flex items-center gap-3">
       <a href="/" class="group flex items-center gap-2.5 transition-transform active:scale-95" aria-label="Lab Manuals Hub home">
-        <span class="flex size-7 items-center justify-center rounded-xl bg-primary font-mono text-[0.65rem] font-black text-primary-foreground shadow-sm group-hover:rotate-6 transition-transform duration-200">
+        <span class="flex size-7 items-center justify-center rounded-xl bg-primary font-mono text-[0.65rem] font-black text-primary-foreground shadow-sm group-hover:scale-110 transition-transform duration-200">
           LM
         </span>
         <span class="flex flex-col leading-none">
@@ -25,7 +36,7 @@ const experimentSlug = isExperiment ? pathSegments[2] : "";
           </span>
         </span>
       </a>
-      
+
       {subjectSlug && (
         <div class="hidden items-center gap-1.5 font-mono text-[0.7rem] text-muted-foreground md:flex">
           <span class="text-border">/</span>
@@ -43,15 +54,6 @@ const experimentSlug = isExperiment ? pathSegments[2] : "";
     </div>
 
     <div class="flex items-center gap-3">
-      <a
-        href="/"
-        class:list={[
-          "rounded-xl border border-border px-3 py-1 font-mono text-xs text-muted-foreground transition-all hover:border-primary hover:text-primary hover:bg-primary/5 active:scale-95",
-          isHome && "bg-primary/5 border-primary/50 text-primary font-medium",
-        ]}
-      >
-        index.html
-      </a>
       <button
         data-theme-toggle
         type="button"
