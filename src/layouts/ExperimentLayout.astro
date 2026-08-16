@@ -177,6 +177,41 @@ const toc = headings.filter((h) => h.depth === 2);
 </BaseLayout>
 
 <script>
+  // Process Mermaid code blocks
+  document.querySelectorAll('pre[data-language="mermaid"]').forEach((pre) => {
+    const code = pre.querySelector("code")?.innerText || pre.innerText;
+    const div = document.createElement("div");
+    div.className = "mermaid my-6 flex justify-center bg-card p-4 rounded-2xl border border-border/60";
+    div.textContent = code;
+    pre.replaceWith(div);
+  });
+  if (window.mermaid) {
+    window.mermaid.initialize({
+      startOnLoad: false,
+      theme: document.documentElement.classList.contains("dark") ? "dark" : "default",
+    });
+    window.mermaid.run();
+  }
+
+  // Process Graphviz DOT code blocks
+  const dotBlocks = document.querySelectorAll('pre[data-language="dot"], pre[data-language="graphviz"]');
+  if (dotBlocks.length > 0 && window["@hpcc-js/wasm"]) {
+    window["@hpcc-js/wasm"].Graphviz.load().then((graphviz) => {
+      dotBlocks.forEach((pre) => {
+        const code = pre.querySelector("code")?.innerText || pre.innerText;
+        try {
+          const svg = graphviz.layout(code, "svg", "dot");
+          const div = document.createElement("div");
+          div.className = "graphviz-graph my-6 flex justify-center bg-card p-4 rounded-2xl border border-border/60 overflow-x-auto";
+          div.innerHTML = svg;
+          pre.replaceWith(div);
+        } catch (err) {
+          console.error("Graphviz rendering failed:", err);
+        }
+      });
+    });
+  }
+
   // Process blockquotes to render GitHub-style alerts dynamically
   document.querySelectorAll(".prose blockquote").forEach((bq) => {
     const html = bq.innerHTML;

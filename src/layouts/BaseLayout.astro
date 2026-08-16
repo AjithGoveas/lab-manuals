@@ -38,6 +38,9 @@ const pageTitle = title.includes("Deep Learning Lab") ? title : `${title} | Deep
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="renderMath()"></script>
+    <!-- Mermaid & Graphviz Support -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@2.16.2/dist/index.min.js" is:inline></script>
   </head>
   <body class="min-h-dvh bg-background font-sans text-foreground antialiased flex flex-col">
     <Header subjectSlug={subjectSlug} experimentSlug={experimentSlug} />
