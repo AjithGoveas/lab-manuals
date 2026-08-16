@@ -300,3 +300,69 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
+
+/* GitHub Style Markdown Alerts Styling */
+.prose blockquote.markdown-alert {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-left-width: 4px;
+  border-radius: 0 0.75rem 0.75rem 0;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  background-color: var(--card);
+}
+
+.prose blockquote.markdown-alert p {
+  margin: 0;
+}
+
+.prose blockquote.markdown-alert .markdown-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.65rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Warning Alert */
+.prose blockquote.markdown-alert.markdown-alert-warning {
+  border-left-color: #f59e0b; /* Amber */
+  background-color: rgba(245, 158, 11, 0.05);
+  color: #78350f; /* Dark amber */
+}
+.dark .prose blockquote.markdown-alert.markdown-alert-warning {
+  color: #fde68a; /* Light amber */
+}
+.prose blockquote.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: #d97706;
+}
+
+/* Note Alert */
+.prose blockquote.markdown-alert.markdown-alert-note {
+  border-left-color: #3b82f6; /* Blue */
+  background-color: rgba(59, 130, 246, 0.05);
+  color: #1e3a8a;
+}
+.dark .prose blockquote.markdown-alert.markdown-alert-note {
+  color: #bfdbfe;
+}
+.prose blockquote.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: #2563eb;
+}
+
+/* Tip Alert */
+.prose blockquote.markdown-alert.markdown-alert-tip {
+  border-left-color: #10b981; /* Green */
+  background-color: rgba(16, 185, 129, 0.05);
+  color: #064e3b;
+}
+.dark .prose blockquote.markdown-alert.markdown-alert-tip {
+  color: #a7f3d0;
+}
+.prose blockquote.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: #059669;
+}

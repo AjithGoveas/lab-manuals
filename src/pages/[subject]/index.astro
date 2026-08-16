@@ -15,12 +15,15 @@ const experiments = (await getCollection("experiments"))
   .filter((exp) => exp.data.subjectSlug === subject)
   .sort((a, b) => a.data.experimentNumber - b.data.experimentNumber);
 
-const subjectTitle = experiments[0]?.data.subject || "Lab Manual";
-const totalViva = experiments.reduce(
+const actualExperiments = experiments.filter((e) => !e.id.includes("setup") && !e.id.includes("guide"));
+const setupGuides = experiments.filter((e) => e.id.includes("setup") || e.id.includes("guide"));
+
+const subjectTitle = actualExperiments[0]?.data.subject || "Lab Manual";
+const totalViva = actualExperiments.reduce(
   (sum, exp) => sum + (exp.data.vivaQuestions?.length ?? 0),
   0
 );
-const datasets = [...new Set(experiments.map((exp) => exp.data.dataset).filter(Boolean))];
+const datasets = [...new Set(actualExperiments.map((exp) => exp.data.dataset).filter(Boolean))];
 
 const formatNumber = (n: number) => String(n).padStart(2, "0");
 
@@ -60,7 +63,7 @@ const subjectDetails: Record<string, { outcomes: string[]; env: string[]; resour
 
 const details = subjectDetails[subject] || { outcomes: [], env: [], resources: [] };
 
-const sparks = experiments;
+const sparks = actualExperiments;
 ---
 
 <BaseLayout
@@ -101,7 +104,7 @@ const sparks = experiments;
             <span class="text-primary font-serif italic font-normal bg-linear-to-r from-primary to-primary/80 bg-clip-text">Laboratory Manual</span>
           </h1>
           <p class="mt-4 max-w-2xl text-[1rem] leading-relaxed text-muted-foreground font-serif">
-            A comprehensive reference manual containing {experiments.length} structured hands-on experiments for {subjectTitle}. Each experiment details theoretical background, implementation code, standard observation parameters, and viva questions.
+            A comprehensive reference manual containing {actualExperiments.length} structured hands-on experiments for {subjectTitle}. Each experiment details theoretical background, implementation code, standard observation parameters, and viva questions.
           </p>
         </div>
 
@@ -109,7 +112,7 @@ const sparks = experiments;
           <div class="grid grid-cols-3 gap-3 font-mono text-xs">
             <div class="bg-card/50 border border-border/60 rounded-2xl p-3 shadow-2xs">
               <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">EXPERIMENTS</span>
-              <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(experiments.length)}</span>
+              <span class="mt-0.5 text-xl font-bold text-foreground block">{formatNumber(actualExperiments.length)}</span>
             </div>
             <div class="bg-card/50 border border-border/60 rounded-2xl p-3 shadow-2xs">
               <span class="text-muted-foreground block text-[0.6rem] uppercase font-bold">DATASETS</span>
@@ -239,6 +242,42 @@ const sparks = experiments;
           </ul>
         </div>
       </div>
+
+      <!-- Setup Guides card -->
+      {setupGuides && setupGuides.length > 0 && (
+        <div class="flex flex-col">
+          <div class="mb-4 flex items-baseline justify-between border-b border-border pb-2">
+            <h2 class="font-sans text-xs font-bold uppercase tracking-wider text-foreground">
+              Setup & Installation Guides
+            </h2>
+            <span class="font-mono text-[0.65rem] text-muted-foreground">SETUP</span>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            {setupGuides.map((guide) => (
+              <a
+                href={`/experiments/${subject}/${guide.id.split("/")[1] || guide.id}`}
+                class="group bg-card/70 border border-border hover:border-primary/50 rounded-2xl p-4 shadow-2xs transition-all duration-200 block"
+              >
+                <div class="flex items-center justify-between border-b border-border/40 pb-2 mb-2">
+                  <span class="font-mono text-[0.6rem] text-primary uppercase font-bold tracking-wider">
+                    {guide.data.tags[0] || "Guide"}
+                  </span>
+                  <span class="text-[0.65rem] text-muted-foreground group-hover:text-primary transition-colors">
+                    Read Guide &rarr;
+                  </span>
+                </div>
+                <h3 class="font-sans text-xs font-bold text-foreground group-hover:text-primary transition-colors">
+                  {guide.data.title}
+                </h3>
+                <p class="mt-1 text-[0.7rem] text-muted-foreground leading-normal font-serif">
+                  {guide.data.description}
+                </p>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       <!-- External References card -->
       {details.resources && details.resources.length > 0 && (

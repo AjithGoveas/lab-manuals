@@ -12,6 +12,16 @@ interface Props {
 const { entry, headings = [], prev, next } = Astro.props;
 const { data } = entry;
 
+const isSetup = entry.id.includes("setup") || entry.id.includes("guide");
+
+const prevParts = prev ? prev.id.split("/") : [];
+const prevSubject = prevParts[0] || prev?.data.subjectSlug;
+const prevSlug = (prevParts[1] || "").replace(/\.md$/, "");
+
+const nextParts = next ? next.id.split("/") : [];
+const nextSubject = nextParts[0] || next?.data.subjectSlug;
+const nextSlug = (nextParts[1] || "").replace(/\.md$/, "");
+
 const formatNumber = (n: number) => String(n).padStart(2, "0");
 const questions = data.vivaQuestions?.length ?? 0;
 const toc = headings.filter((h) => h.depth === 2);
@@ -43,35 +53,37 @@ const toc = headings.filter((h) => h.depth === 2);
       <div class="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-primary/30 via-primary to-primary/30"></div>
 
       <!-- Metadata Row -->
-      <div class="grid grid-cols-2 gap-4 border-b border-border/60 pb-5 font-mono text-xs sm:grid-cols-4">
-        <div>
-          <span class="text-muted-foreground block text-[0.6rem] uppercase tracking-wider font-bold">EXPERIMENT</span>
-          <span class="font-bold text-primary mt-1 block text-sm">EXP-{formatNumber(data.experimentNumber)}</span>
+      {!isSetup && (
+        <div class="grid grid-cols-2 gap-4 border-b border-border/60 pb-5 font-mono text-xs sm:grid-cols-4">
+          <div>
+            <span class="text-muted-foreground block text-[0.6rem] uppercase tracking-wider font-bold">EXPERIMENT</span>
+            <span class="font-bold text-primary mt-1 block text-sm">EXP-{formatNumber(data.experimentNumber)}</span>
+          </div>
+          <div>
+            <span class="text-muted-foreground block text-[0.6rem] uppercase tracking-wider font-bold">DATASET</span>
+            <span class="text-foreground mt-1 block font-bold text-sm">{data.dataset || "N/A"}</span>
+          </div>
+          <div>
+            <span class="text-muted-foreground block text-[0.6rem] uppercase tracking-wider font-bold">VIVA ITEMS</span>
+            <span class="text-foreground mt-1 block font-bold text-sm">{formatNumber(questions)} questions</span>
+          </div>
+          <div>
+            <span class="text-muted-foreground block text-[0.6rem] uppercase tracking-wider font-bold">LAB NOTEBOOK</span>
+            {data.notebookUrl ? (
+              <a
+                href={data.notebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary hover:underline font-bold mt-1 block text-sm items-center gap-0.5"
+              >
+                open_notebook <span class="text-[0.65rem]">&nearr;</span>
+              </a>
+            ) : (
+              <span class="text-muted-foreground mt-1 block text-sm">none</span>
+            )}
+          </div>
         </div>
-        <div>
-          <span class="text-muted-foreground block text-[0.6rem] uppercase tracking-wider font-bold">DATASET</span>
-          <span class="text-foreground mt-1 block font-bold text-sm">{data.dataset || "N/A"}</span>
-        </div>
-        <div>
-          <span class="text-muted-foreground block text-[0.6rem] uppercase tracking-wider font-bold">VIVA ITEMS</span>
-          <span class="text-foreground mt-1 block font-bold text-sm">{formatNumber(questions)} questions</span>
-        </div>
-        <div>
-          <span class="text-muted-foreground block text-[0.6rem] uppercase tracking-wider font-bold">LAB NOTEBOOK</span>
-          {data.notebookUrl ? (
-            <a
-              href={data.notebookUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-primary hover:underline font-bold mt-1 block text-sm items-center gap-0.5"
-            >
-              open_notebook <span class="text-[0.65rem]">&nearr;</span>
-            </a>
-          ) : (
-            <span class="text-muted-foreground mt-1 block text-sm">none</span>
-          )}
-        </div>
-      </div>
+      )}
 
       <!-- Title & description -->
       <h1 class="font-sans mt-6 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl leading-tight">
@@ -124,45 +136,62 @@ const toc = headings.filter((h) => h.depth === 2);
     </div>
 
     <!-- Navigation / Step Controls at Bottom -->
-    <div class="mt-16 border-t border-border/80 pt-8">
-      <div class="mb-6 flex items-baseline justify-between font-mono text-[0.65rem] text-muted-foreground tracking-wider uppercase font-bold">
-        <span>[Manual Navigation]</span>
-        <span>Syllabus Sequence</span>
-      </div>
+    {!isSetup && (
+      <div class="mt-16 border-t border-border/80 pt-8">
+        <div class="mb-6 flex items-baseline justify-between font-mono text-[0.65rem] text-muted-foreground tracking-wider uppercase font-bold">
+          <span>[Manual Navigation]</span>
+          <span>Syllabus Sequence</span>
+        </div>
 
-      <div class="grid gap-5 sm:grid-cols-2">
-        {prev && (
-          <a
-            href={`/experiments/${prev.id}`}
-            class="group border border-border bg-card hover:border-primary/40 rounded-2xl p-5 shadow-2xs hover:shadow-xs transition-all duration-200"
-          >
-            <span class="font-mono text-[0.62rem] text-muted-foreground block uppercase font-semibold">
-              &larr; PREVIOUS EXPERIMENT / EXP-{formatNumber(prev.data.experimentNumber)}
-            </span>
-            <span class="font-sans mt-2 text-sm font-bold text-foreground group-hover:text-primary block transition-colors leading-tight">
-              {prev.data.title}
-            </span>
-          </a>
-        )}
-        {next && (
-          <a
-            href={`/experiments/${next.id}`}
-            class="group border border-border bg-card hover:border-primary/40 rounded-2xl p-5 text-right shadow-2xs hover:shadow-xs transition-all duration-200 sm:col-start-2"
-          >
-            <span class="font-mono text-[0.62rem] text-muted-foreground block uppercase font-semibold">
-              NEXT EXPERIMENT / EXP-{formatNumber(next.data.experimentNumber)} &rarr;
-            </span>
-            <span class="font-sans mt-2 text-sm font-bold text-foreground group-hover:text-primary block transition-colors leading-tight">
-              {next.data.title}
-            </span>
-          </a>
-        )}
+        <div class="grid gap-5 sm:grid-cols-2">
+          {prev && (
+            <a
+              href={`/experiments/${prevSubject}/${prevSlug}`}
+              class="group border border-border bg-card hover:border-primary/40 rounded-2xl p-5 shadow-2xs hover:shadow-xs transition-all duration-200"
+            >
+              <span class="font-mono text-[0.62rem] text-muted-foreground block uppercase font-semibold">
+                &larr; PREVIOUS EXPERIMENT / EXP-{formatNumber(prev.data.experimentNumber)}
+              </span>
+              <span class="font-sans mt-2 text-sm font-bold text-foreground group-hover:text-primary block transition-colors leading-tight">
+                {prev.data.title}
+              </span>
+            </a>
+          )}
+          {next && (
+            <a
+              href={`/experiments/${nextSubject}/${nextSlug}`}
+              class="group border border-border bg-card hover:border-primary/40 rounded-2xl p-5 text-right shadow-2xs hover:shadow-xs transition-all duration-200 sm:col-start-2"
+            >
+              <span class="font-mono text-[0.62rem] text-muted-foreground block uppercase font-semibold">
+                NEXT EXPERIMENT / EXP-{formatNumber(next.data.experimentNumber)} &rarr;
+              </span>
+              <span class="font-sans mt-2 text-sm font-bold text-foreground group-hover:text-primary block transition-colors leading-tight">
+                {next.data.title}
+              </span>
+            </a>
+          )}
+        </div>
       </div>
-    </div>
+    )}
   </article>
 </BaseLayout>
 
 <script>
+  // Process blockquotes to render GitHub-style alerts dynamically
+  document.querySelectorAll(".prose blockquote").forEach((bq) => {
+    const html = bq.innerHTML;
+    if (html.includes("[!WARNING]")) {
+      bq.classList.add("markdown-alert", "markdown-alert-warning");
+      bq.innerHTML = html.replace("[!WARNING]", '<span class="markdown-alert-title">⚠️ Warning</span>');
+    } else if (html.includes("[!NOTE]")) {
+      bq.classList.add("markdown-alert", "markdown-alert-note");
+      bq.innerHTML = html.replace("[!NOTE]", '<span class="markdown-alert-title">ℹ️ Note</span>');
+    } else if (html.includes("[!TIP]")) {
+      bq.classList.add("markdown-alert", "markdown-alert-tip");
+      bq.innerHTML = html.replace("[!TIP]", '<span class="markdown-alert-title">💡 Tip</span>');
+    }
+  });
+
   const progress = document.getElementById("reading-progress");
 
   const track = document.createElement("div");

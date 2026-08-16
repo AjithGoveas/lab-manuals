@@ -27,7 +27,7 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
 const allExperiments = (await getCollection("experiments"))
-  .filter((exp) => exp.data.subjectSlug === entry.data.subjectSlug)
+  .filter((exp) => exp.data.subjectSlug === entry.data.subjectSlug && !exp.id.includes("setup") && !exp.id.includes("guide"))
   .sort((a, b) => a.data.experimentNumber - b.data.experimentNumber);
 
 const index = allExperiments.findIndex((exp) => exp.id === entry.id);
