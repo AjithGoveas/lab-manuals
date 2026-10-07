@@ -225,17 +225,55 @@ const toc = headings.filter((h) => h.depth === 2);
   }
 
   // Process blockquotes to render GitHub-style alerts dynamically
+  const ALERT_CONFIGS: Record<string, { type: string; title: string; icon: string }> = {
+    NOTE: {
+      type: "note",
+      title: "Note",
+      icon: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>',
+    },
+    TIP: {
+      type: "tip",
+      title: "Tip",
+      icon: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.868.409.627.629 1.343.629 2.075v.25h3v-.25c0-.732.22-1.448.629-2.075.203-.312.45-.604.673-.868l.214-.253c.56-.679.984-1.32.984-2.304 0-2.06-1.637-3.75-4-3.75ZM6 12v.75A1.25 1.25 0 0 0 7.25 14h1.5A1.25 1.25 0 0 0 10 12.75V12H6Z"></path></svg>',
+    },
+    IMPORTANT: {
+      type: "important",
+      title: "Important",
+      icon: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H9.06l-2.573 2.573A1.458 1.458 0 0 1 4 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h3.25a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h5.25a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm6.25 2.5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>',
+    },
+    WARNING: {
+      type: "warning",
+      title: "Warning",
+      icon: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>',
+    },
+    CAUTION: {
+      type: "caution",
+      title: "Caution",
+      icon: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M4.47.04c.328-.04.656-.04.984 0l5.59 1.49c.31.08.59.24.81.46l3.65 3.65c.22.22.38.5.46.81l1.49 5.59c.04.328.04.656 0 .984l-1.49 5.59c-.08.31-.24.59-.46.81l-3.65 3.65c-.22.22-.5.38-.81.46l-5.59 1.49c-.328.04-.656.04-.984 0l-5.59-1.49c-.31-.08-.59-.24-.81-.46l-3.65-3.65c-.22-.22-.38-.5-.46-.81l-1.49-5.59c-.04-.328-.04-.656 0-.984l1.49-5.59c.08-.31.24-.59.46-.81l3.65-3.65c.22-.22.5-.38.81-.46Zm.78 1.49-3.4 3.4L.49 10.3l1.36 5.37 5.37 1.36 3.4-3.4 1.36-5.37L10.62 4.89l-5.37-1.36ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>',
+    },
+  };
+
   document.querySelectorAll(".prose blockquote").forEach((bq) => {
-    const html = bq.innerHTML;
-    if (html.includes("[!WARNING]")) {
-      bq.classList.add("markdown-alert", "markdown-alert-warning");
-      bq.innerHTML = html.replace("[!WARNING]", '<span class="markdown-alert-title">⚠️ Warning</span>');
-    } else if (html.includes("[!NOTE]")) {
-      bq.classList.add("markdown-alert", "markdown-alert-note");
-      bq.innerHTML = html.replace("[!NOTE]", '<span class="markdown-alert-title">ℹ️ Note</span>');
-    } else if (html.includes("[!TIP]")) {
-      bq.classList.add("markdown-alert", "markdown-alert-tip");
-      bq.innerHTML = html.replace("[!TIP]", '<span class="markdown-alert-title">💡 Tip</span>');
+    const rawHtml = bq.innerHTML;
+    for (const [key, cfg] of Object.entries(ALERT_CONFIGS)) {
+      if (rawHtml.includes(`[!${key}]`)) {
+        let contentHtml = rawHtml.replace(new RegExp(`\\[!${key}\\]\\s*(?:<br\\s*\\/?>)?`, "i"), "").trim();
+        contentHtml = contentHtml.replace(/^<p>\s*<\/p>/i, "").trim();
+
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `markdown-alert markdown-alert-${cfg.type}`;
+        alertDiv.innerHTML = `
+          <div class="markdown-alert-title">
+            ${cfg.icon}
+            <span>${cfg.title}</span>
+          </div>
+          <div class="markdown-alert-content">
+            ${contentHtml}
+          </div>
+        `;
+        bq.replaceWith(alertDiv);
+        break;
+      }
     }
   });
 

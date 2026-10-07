@@ -302,67 +302,130 @@
 }
 
 /* GitHub Style Markdown Alerts Styling */
-.prose blockquote.markdown-alert {
+.markdown-alert {
   margin: 1.5rem 0;
-  padding: 1rem 1.25rem;
+  padding: 0.85rem 1.25rem;
   border-left-width: 4px;
-  border-radius: 0 0.75rem 0.75rem 0;
+  border-left-style: solid;
+  border-radius: 0 0.85rem 0.85rem 0;
   font-family: var(--font-sans);
-  font-size: 0.8rem;
-  line-height: 1.5;
-  background-color: var(--card);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  font-style: normal !important;
 }
 
-.prose blockquote.markdown-alert p {
-  margin: 0;
-}
-
-.prose blockquote.markdown-alert .markdown-alert-title {
+.markdown-alert .markdown-alert-title {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.65rem;
-  margin-bottom: 0.25rem;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  margin-bottom: 0.35rem;
+  line-height: 1.2;
 }
 
-/* Warning Alert */
-.prose blockquote.markdown-alert.markdown-alert-warning {
-  border-left-color: #f59e0b; /* Amber */
-  background-color: rgba(245, 158, 11, 0.05);
-  color: #78350f; /* Dark amber */
-}
-.dark .prose blockquote.markdown-alert.markdown-alert-warning {
-  color: #fde68a; /* Light amber */
-}
-.prose blockquote.markdown-alert.markdown-alert-warning .markdown-alert-title {
-  color: #d97706;
+.markdown-alert .markdown-alert-title svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
 }
 
-/* Note Alert */
-.prose blockquote.markdown-alert.markdown-alert-note {
-  border-left-color: #3b82f6; /* Blue */
-  background-color: rgba(59, 130, 246, 0.05);
-  color: #1e3a8a;
-}
-.dark .prose blockquote.markdown-alert.markdown-alert-note {
-  color: #bfdbfe;
-}
-.prose blockquote.markdown-alert.markdown-alert-note .markdown-alert-title {
-  color: #2563eb;
+.markdown-alert .markdown-alert-content {
+  font-style: normal !important;
+  color: var(--foreground);
 }
 
-/* Tip Alert */
-.prose blockquote.markdown-alert.markdown-alert-tip {
-  border-left-color: #10b981; /* Green */
-  background-color: rgba(16, 185, 129, 0.05);
-  color: #064e3b;
+.markdown-alert .markdown-alert-content p {
+  margin: 0.35rem 0;
+  font-style: normal !important;
 }
-.dark .prose blockquote.markdown-alert.markdown-alert-tip {
-  color: #a7f3d0;
+
+.markdown-alert .markdown-alert-content p:first-child {
+  margin-top: 0;
 }
-.prose blockquote.markdown-alert.markdown-alert-tip .markdown-alert-title {
-  color: #059669;
+
+.markdown-alert .markdown-alert-content p:last-child {
+  margin-bottom: 0;
 }
+
+/* Note: Blue */
+.markdown-alert.markdown-alert-note {
+  border-left-color: #0969da;
+  background-color: rgba(9, 105, 218, 0.08);
+}
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: #0969da;
+}
+.dark .markdown-alert.markdown-alert-note {
+  border-left-color: #2f81f7;
+  background-color: rgba(47, 129, 247, 0.12);
+}
+.dark .markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: #2f81f7;
+}
+
+/* Tip: Green */
+.markdown-alert.markdown-alert-tip {
+  border-left-color: #1a7f37;
+  background-color: rgba(26, 127, 55, 0.08);
+}
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: #1a7f37;
+}
+.dark .markdown-alert.markdown-alert-tip {
+  border-left-color: #3fb950;
+  background-color: rgba(63, 185, 80, 0.12);
+}
+.dark .markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: #3fb950;
+}
+
+/* Important: Purple */
+.markdown-alert.markdown-alert-important {
+  border-left-color: #8250df;
+  background-color: rgba(130, 80, 223, 0.08);
+}
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: #8250df;
+}
+.dark .markdown-alert.markdown-alert-important {
+  border-left-color: #a371f7;
+  background-color: rgba(163, 113, 247, 0.12);
+}
+.dark .markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: #a371f7;
+}
+
+/* Warning: Amber */
+.markdown-alert.markdown-alert-warning {
+  border-left-color: #9a6700;
+  background-color: rgba(154, 103, 0, 0.08);
+}
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: #9a6700;
+}
+.dark .markdown-alert.markdown-alert-warning {
+  border-left-color: #d29922;
+  background-color: rgba(210, 153, 34, 0.12);
+}
+.dark .markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: #d29922;
+}
+
+/* Caution: Red */
+.markdown-alert.markdown-alert-caution {
+  border-left-color: #cf222e;
+  background-color: rgba(207, 34, 46, 0.08);
+}
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: #cf222e;
+}
+.dark .markdown-alert.markdown-alert-caution {
+  border-left-color: #f85149;
+  background-color: rgba(248, 81, 73, 0.12);
+}
+.dark .markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: #f85149;
+}
+
