@@ -150,6 +150,12 @@ Final Loss (Momentum): 0.421526
 Final Loss (Adam): 0.004495 
 ```
 
+### Output Figures
+
+![Optimizer Comparison Loss Plot](./result_1.png)
+
+![Optimizer Final Loss Console Output](./result_2.png)
+
 ## Conclusion
 
 The comparison demonstrates that the **Adam** optimizer converges significantly faster and achieves a lower final cross-entropy loss compared to **SGD** and **Momentum** on the non-linear XOR toy dataset. This highlights the effectiveness of combining adaptive learning rates and momentum updates.

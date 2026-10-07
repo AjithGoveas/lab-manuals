@@ -134,6 +134,10 @@ Input: [1 0] - Predicted Output: 0 - True Output: 1
 Input: [1 1] - Predicted Output: 0 - True Output: 0 
 ```
 
+### Output Figures
+
+![XOR Training Output and Predictions](./result_1.png)
+
 ## Conclusion
 
 The Multi-Layer Perceptron successfully learns the XOR function. This experiment validates that adding a hidden layer with non-linear activation functions enables neural networks to solve non-linearly separable classification tasks.

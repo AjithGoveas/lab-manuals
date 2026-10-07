@@ -139,6 +139,12 @@ Epoch 5/5
 Test accuracy: 0.9906
 ```
 
+### Output Figures
+
+![CNN Accuracy Curves](./result_1.png)
+
+![CNN Training Epochs and Test Accuracy](./result_2.png)
+
 ## Conclusion
 
 The Convolutional Neural Network demonstrates strong performance on the MNIST dataset, achieving an accuracy of **99.06%** in just 5 training epochs. This confirms that local receptive fields, parameter sharing via convolution, and downsampling via max pooling successfully extract structural representations from image grids.

@@ -36,6 +36,44 @@ const pageTitle = title.includes("Deep Learning Lab") ? title : `${title} | Deep
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <!-- KaTeX Math Support -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+    <script is:inline>
+      window.renderMath = function () {
+        if (typeof renderMathInElement === "function") {
+          try {
+            var mathContainers = document.querySelectorAll(".prose p, .prose li, .prose div, .prose h1, .prose h2, .prose h3, .prose h4");
+            mathContainers.forEach(function (el) {
+              if (el.innerHTML.indexOf("$") !== -1 && (el.querySelector("em") || el.querySelector("strong"))) {
+                el.innerHTML = el.innerHTML.replace(/\$\$([\s\S]*?)\$\$/g, function (match) {
+                  return match.replace(/<\/?em>/gi, "_").replace(/<\/?strong>/gi, "__");
+                });
+                el.innerHTML = el.innerHTML.replace(/(^|[^\\])\$([^\$]+?)\$/g, function (match, p1, math) {
+                  return p1 + "$" + math.replace(/<\/?em>/gi, "_").replace(/<\/?strong>/gi, "__") + "$";
+                });
+              }
+            });
+          } catch (e) {
+            console.error("Math pre-processing error:", e);
+          }
+          renderMathInElement(document.body, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false },
+              { left: "\\(", right: "\\)", display: false },
+              { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+            throwOnError: false
+          });
+        }
+      };
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () { window.renderMath(); });
+      } else {
+        window.renderMath();
+      }
+      window.addEventListener("load", function () { window.renderMath(); });
+      document.addEventListener("astro:page-load", function () { window.renderMath(); });
+    </script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="renderMath()"></script>
     <!-- Mermaid & Graphviz Support -->
@@ -58,22 +96,6 @@ const pageTitle = title.includes("Deep Learning Lab") ? title : `${title} | Deep
 </style>
 
 <script is:inline>
-  window.renderMath = function () {
-    if (typeof renderMathInElement === "function") {
-      renderMathInElement(document.body, {
-        delimiters: [
-          { left: "$$", right: "$$", display: true },
-          { left: "$", right: "$", display: false },
-          { left: "\\(", right: "\\)", display: false },
-          { left: "\\[", right: "\\]", display: true }
-        ],
-        throwOnError: false
-      });
-    }
-  };
-
-  document.addEventListener("astro:page-load", window.renderMath);
-
   (function () {
     function getInitialTheme() {
       var stored = localStorage.getItem("theme");

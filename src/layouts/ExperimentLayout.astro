@@ -178,26 +178,38 @@ const toc = headings.filter((h) => h.depth === 2);
 
 <script>
   // Process Mermaid code blocks
-  document.querySelectorAll('pre[data-language="mermaid"]').forEach((pre) => {
-    const code = pre.querySelector("code")?.innerText || pre.innerText;
+  document.querySelectorAll('pre[data-language="mermaid"], pre code.language-mermaid, .language-mermaid').forEach((el) => {
+    const pre = el.tagName.toLowerCase() === 'pre' ? el : el.closest('pre') || el;
+    const lineSpans = pre.querySelectorAll(".line");
+    let code = "";
+    if (lineSpans.length > 0) {
+      code = Array.from(lineSpans).map((l) => l.textContent).join("\n");
+    } else {
+      code = pre.querySelector("code")?.innerText || pre.innerText || "";
+    }
     const div = document.createElement("div");
-    div.className = "mermaid my-6 flex justify-center bg-card p-4 rounded-2xl border border-border/60";
-    div.textContent = code;
+    div.className = "mermaid my-6 flex justify-center bg-card p-4 rounded-2xl border border-border/60 overflow-x-auto";
+    div.textContent = code.trim();
     pre.replaceWith(div);
   });
   if (window.mermaid) {
-    window.mermaid.initialize({
-      startOnLoad: false,
-      theme: document.documentElement.classList.contains("dark") ? "dark" : "default",
-    });
-    window.mermaid.run();
+    try {
+      window.mermaid.initialize({
+        startOnLoad: false,
+        theme: document.documentElement.classList.contains("dark") ? "dark" : "default",
+      });
+      window.mermaid.run();
+    } catch (err) {
+      console.error("Mermaid initialization failed:", err);
+    }
   }
 
   // Process Graphviz DOT code blocks
-  const dotBlocks = document.querySelectorAll('pre[data-language="dot"], pre[data-language="graphviz"]');
+  const dotBlocks = document.querySelectorAll('pre[data-language="dot"], pre[data-language="graphviz"], pre code.language-dot, pre code.language-graphviz');
   if (dotBlocks.length > 0 && window["@hpcc-js/wasm"]) {
     window["@hpcc-js/wasm"].Graphviz.load().then((graphviz) => {
-      dotBlocks.forEach((pre) => {
+      dotBlocks.forEach((el) => {
+        const pre = el.tagName.toLowerCase() === 'pre' ? el : el.closest('pre') || el;
         const code = pre.querySelector("code")?.innerText || pre.innerText;
         try {
           const svg = graphviz.layout(code, "svg", "dot");
@@ -226,6 +238,8 @@ const toc = headings.filter((h) => h.depth === 2);
       bq.innerHTML = html.replace("[!TIP]", '<span class="markdown-alert-title">💡 Tip</span>');
     }
   });
+
+  if (window.renderMath) window.renderMath();
 
   const progress = document.getElementById("reading-progress");
 

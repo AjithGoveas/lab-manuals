@@ -34,7 +34,7 @@ export default function ResultFigures({
     <section className="my-12">
       <div className="mb-6 flex items-baseline justify-between border-b border-border pb-3">
         <h2 className="font-heading text-sm font-bold uppercase tracking-wider text-foreground">
-          Results
+          {figures.length > 0 ? "Results" : (isCloud ? "Verification Log" : "Observation Metrics")}
         </h2>
         <span className="font-mono text-xs text-muted-foreground">
           outputs/{figureFile}

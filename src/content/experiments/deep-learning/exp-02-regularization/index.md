@@ -167,6 +167,10 @@ Epoch 14/50
 
 Early stopping is triggered after epoch 14 since validation loss fails to improve, preventing overfitting.
 
+### Output Figures
+
+![Regularization Training Epochs Output](./result_1.png)
+
 ## Conclusion
 
 This experiment demonstrates that combining norm penalties, dropout, early stopping, and dataset augmentation forms a robust defense against model overfitting, significantly improving Generalization.
